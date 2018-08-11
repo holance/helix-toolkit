@@ -154,20 +154,20 @@ namespace HelixToolkit.Wpf.SharpDX
             this.writer.WriteLine(string.Format("o object{0}", this.objectNo++));
             this.writer.WriteLine(string.Format("g group{0}", this.groupNo++));
 
-            if (this.exportedMaterials.ContainsKey(model.Material))
+            if (this.exportedMaterials.ContainsKey(model.MaterialComp))
             {
-                string matName = this.exportedMaterials[model.Material];
+                string matName = this.exportedMaterials[model.MaterialComp];
                 this.writer.WriteLine(string.Format("usemtl {0}", matName));
             }
             else
             {
                 string matName = string.Format("mat{0}", this.matNo++);
                 this.writer.WriteLine(string.Format("usemtl {0}", matName));
-                this.ExportMaterial(matName, model.Material);
-                this.exportedMaterials.Add(model.Material, matName);
+                this.ExportMaterial(matName, model.MaterialComp);
+                this.exportedMaterials.Add(model.MaterialComp, matName);
             }
 
-            var mesh = model.Geometry as MeshGeometry3D;
+            var mesh = model.GeometryComp.Geometry as MeshGeometry3D;
             this.ExportMesh(mesh, transform);
         }
 

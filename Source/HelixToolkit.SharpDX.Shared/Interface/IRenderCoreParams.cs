@@ -15,10 +15,20 @@ namespace HelixToolkit.UWP.Core
 {
     using Model;
     using Render;
+    public interface IRasterStateParam
+    {
+        /// <summary>
+        /// Gets or sets the raster description.
+        /// </summary>
+        /// <value>
+        /// The raster description.
+        /// </value>
+        RasterizerStateDescription RasterDescription { set; get; }
+    }
     /// <summary>
     /// 
     /// </summary>
-    public interface IGeometryRenderCore
+    public interface IGeometryRenderCore : IRasterStateParam
     {
         /// <summary>
         /// Gets or sets the instance buffer.
@@ -34,13 +44,6 @@ namespace HelixToolkit.UWP.Core
         /// The geometry buffer.
         /// </value>
         IAttachableBufferModel GeometryBuffer { set; get; }
-        /// <summary>
-        /// Gets or sets the raster description.
-        /// </summary>
-        /// <value>
-        /// The raster description.
-        /// </value>
-        RasterizerStateDescription RasterDescription { set; get; }
     }
 
     /// <summary>

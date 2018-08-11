@@ -126,83 +126,83 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             base.UpdateNotRender(context);
             if (isInstanceChanged)
             {
-                BuildOctree();
+                //BuildOctree();
                 isInstanceChanged = false;
             }
         }
-        /// <summary>
-        /// Instanceses the changed.
-        /// </summary>
-        protected override void InstancesChanged()
-        {
-            base.InstancesChanged();
-            octreeManager?.Clear();
-            isInstanceChanged = true;
-        }
-        /// <summary>
-        /// Builds the octree.
-        /// </summary>
-        private void BuildOctree()
-        {
-            if (IsRenderable && InstanceBuffer.HasElements)
-            {
-                octreeManager?.RebuildTree(Enumerable.Repeat<SceneNode>(this, 1));
-            }
-            else
-            {
-                octreeManager?.Clear();
-            }
-        }
-        /// <summary>
-        /// Hits the test.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="rayWS">The ray ws.</param>
-        /// <param name="hits">The hits.</param>
-        /// <returns></returns>
-        public override bool HitTest(RenderContext context, Ray rayWS, ref List<HitTestResult> hits)
-        {
-            bool isHit = false;
-            if (CanHitTest(context))
-            {
-                if (octreeManager != null && octreeManager.Octree != null)
-                {
-                    var boundHits = new List<HitTestResult>();
-                    isHit = octreeManager.Octree.HitTest(context, this, Geometry, TotalModelMatrix, rayWS, ref boundHits);
-                    if (isHit)
-                    {
-                        isHit = false;
-                        Matrix instanceMatrix;
-                        foreach (var hit in boundHits)
-                        {
-                            int instanceIdx = (int)hit.Tag;
-                            instanceMatrix = InstanceBuffer.Elements[instanceIdx];
-                            var h = base.OnHitTest(context, TotalModelMatrix * instanceMatrix, ref rayWS, ref hits);
-                            isHit |= h;
-                            if (h && hits.Count > 0)
-                            {
-                                var result = hits.Last();
-                                object tag = null;
-                                if (InstanceIdentifiers != null && InstanceIdentifiers.Count == InstanceBuffer.Elements.Count)
-                                {
-                                    tag = InstanceIdentifiers[instanceIdx];
-                                }
-                                else
-                                {
-                                    tag = instanceIdx;
-                                }
-                                result.Tag = tag;
-                                hits[hits.Count - 1] = result;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    isHit = base.HitTest(context, rayWS, ref hits);
-                }
-            }
-            return isHit;
-        }
+        ///// <summary>
+        ///// Instanceses the changed.
+        ///// </summary>
+        //protected override void InstancesChanged()
+        //{
+        //    base.InstancesChanged();
+        //    octreeManager?.Clear();
+        //    isInstanceChanged = true;
+        //}
+        ///// <summary>
+        ///// Builds the octree.
+        ///// </summary>
+        //private void BuildOctree()
+        //{
+        //    if (IsRenderable && InstanceBuffer.HasElements)
+        //    {
+        //        octreeManager?.RebuildTree(Enumerable.Repeat<SceneNode>(this, 1));
+        //    }
+        //    else
+        //    {
+        //        octreeManager?.Clear();
+        //    }
+        //}
+        ///// <summary>
+        ///// Hits the test.
+        ///// </summary>
+        ///// <param name="context">The context.</param>
+        ///// <param name="rayWS">The ray ws.</param>
+        ///// <param name="hits">The hits.</param>
+        ///// <returns></returns>
+        //public override bool HitTest(RenderContext context, Ray rayWS, ref List<HitTestResult> hits)
+        //{
+        //    bool isHit = false;
+        //    if (CanHitTest(context))
+        //    {
+        //        if (octreeManager != null && octreeManager.Octree != null)
+        //        {
+        //            var boundHits = new List<HitTestResult>();
+        //            isHit = octreeManager.Octree.HitTest(context, this, Geometry, TotalModelMatrix, rayWS, ref boundHits);
+        //            if (isHit)
+        //            {
+        //                isHit = false;
+        //                Matrix instanceMatrix;
+        //                foreach (var hit in boundHits)
+        //                {
+        //                    int instanceIdx = (int)hit.Tag;
+        //                    instanceMatrix = InstanceBuffer.Elements[instanceIdx];
+        //                    var h = base.OnHitTest(context, TotalModelMatrix * instanceMatrix, ref rayWS, ref hits);
+        //                    isHit |= h;
+        //                    if (h && hits.Count > 0)
+        //                    {
+        //                        var result = hits.Last();
+        //                        object tag = null;
+        //                        if (InstanceIdentifiers != null && InstanceIdentifiers.Count == InstanceBuffer.Elements.Count)
+        //                        {
+        //                            tag = InstanceIdentifiers[instanceIdx];
+        //                        }
+        //                        else
+        //                        {
+        //                            tag = instanceIdx;
+        //                        }
+        //                        result.Tag = tag;
+        //                        hits[hits.Count - 1] = result;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            isHit = base.HitTest(context, rayWS, ref hits);
+        //        }
+        //    }
+        //    return isHit;
+        //}
     }
 }

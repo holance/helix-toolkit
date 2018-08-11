@@ -26,7 +26,7 @@ namespace CoreTest
         private CameraCore camera;
         private Geometry3D box, sphere, points, lines;
         private GroupNode groupSphere, groupBox, groupPoints, groupLines;
-        private const int NumItems = 2000;
+        private const int NumItems = 4000;
         private Random rnd = new Random((int)Stopwatch.GetTimestamp());
         private Dictionary<string, MaterialCore> materials = new Dictionary<string, MaterialCore>();
         private MaterialCore[] materialList;
@@ -35,7 +35,7 @@ namespace CoreTest
 
         public CoreTestApp(Form window)
         {
-            viewport = new ViewportCore(window.Handle);
+            viewport = new ViewportCore(window.Handle, true);
             this.window = window;
             window.ResizeEnd += Window_ResizeEnd;
             window.Load += Window_Load;
@@ -46,7 +46,7 @@ namespace CoreTest
             viewport.OnStopRendering += Viewport_OnStopRendering;
             viewport.OnErrorOccurred += Viewport_OnErrorOccurred;
             viewport.FXAALevel = FXAALevel.Low;
-            //viewport.RenderHost.EnableRenderFrustum = false;
+            viewport.RenderHost.EnableRenderFrustum = false;
             viewport.RenderHost.RenderConfiguration.EnableRenderOrder = true;
             InitializeScene();
         }
@@ -87,26 +87,34 @@ namespace CoreTest
             for (int i = 0; i < NumItems; ++i)
             {
                 var transform = Matrix.Translation(new Vector3(rnd.NextFloat(-20, 20), rnd.NextFloat(-20, 20), rnd.NextFloat(-20, 20)));
-                groupSphere.AddChildNode(new MeshNode() { Geometry = sphere, Material = materialList[i % materialCount], ModelMatrix = transform, CullMode = SharpDX.Direct3D11.CullMode.Back });
+                var node = new MeshNode() { ModelMatrix = transform };
+                node.GeometryComp.Geometry = sphere;
+                node.MaterialComp.Material = materialList[i % materialCount];
+                node.RasterComp.CullMode = SharpDX.Direct3D11.CullMode.Back;
+                groupSphere.AddChildNode(node);
             }
 
             for (int i = 0; i < NumItems; ++i)
             {
                 var transform = Matrix.Translation(new Vector3(rnd.NextFloat(-50, 50), rnd.NextFloat(-50, 50), rnd.NextFloat(-50, 50)));
-                groupBox.AddChildNode(new MeshNode() { Geometry = box, Material = materialList[i % materialCount], ModelMatrix = transform, CullMode = SharpDX.Direct3D11.CullMode.Back });
+                var node = new MeshNode() { ModelMatrix = transform };
+                node.GeometryComp.Geometry = box;
+                node.MaterialComp.Material = materialList[i % materialCount];
+                node.RasterComp.CullMode = SharpDX.Direct3D11.CullMode.Back;
+                groupBox.AddChildNode(node);
             }
 
-            for(int i=0; i< NumItems; ++i)
-            {
-                var transform = Matrix.Translation(new Vector3(rnd.NextFloat(-50, 50), rnd.NextFloat(-50, 50), rnd.NextFloat(-50, 50)));
-                groupPoints.AddChildNode(new PointNode() { Geometry = points, ModelMatrix = transform, Color = Color.Red, Size = new Size2F(0.5f, 0.5f) });
-            }
+            //for(int i=0; i< NumItems; ++i)
+            //{
+            //    var transform = Matrix.Translation(new Vector3(rnd.NextFloat(-50, 50), rnd.NextFloat(-50, 50), rnd.NextFloat(-50, 50)));
+            //    groupPoints.AddChildNode(new PointNode() { Geometry = points, ModelMatrix = transform, Color = Color.Red, Size = new Size2F(0.5f, 0.5f) });
+            //}
 
-            for (int i = 0; i < NumItems; ++i)
-            {
-                var transform = Matrix.Translation(new Vector3(rnd.NextFloat(-50, 50), rnd.NextFloat(-50, 50), rnd.NextFloat(-50, 50)));
-                groupLines.AddChildNode(new LineNode() { Geometry = lines, ModelMatrix = transform, Color = Color.LightBlue, Thickness = 0.5f });
-            }
+            //for (int i = 0; i < NumItems; ++i)
+            //{
+            //    var transform = Matrix.Translation(new Vector3(rnd.NextFloat(-50, 50), rnd.NextFloat(-50, 50), rnd.NextFloat(-50, 50)));
+            //    groupLines.AddChildNode(new LineNode() { Geometry = lines, ModelMatrix = transform, Color = Color.LightBlue, Thickness = 0.5f });
+            //}
 
             viewport.Items.Add(groupSphere);
             groupSphere.AddChildNode(groupBox);

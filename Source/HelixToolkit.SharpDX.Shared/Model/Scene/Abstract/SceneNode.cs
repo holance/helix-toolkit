@@ -22,14 +22,14 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
     /// <summary>
     ///
     /// </summary>
-    public abstract partial class SceneNode : DisposeObject
+    public abstract partial class SceneNode : Entity
     {
         #region Properties
 
         /// <summary>
         ///
         /// </summary>
-        public Guid GUID { get { return RenderCore.GUID; } }
+        public sealed override Guid GUID { get { return RenderCore.GUID; } }
 
         private Matrix totalModelMatrix = Matrix.Identity;
         protected bool forceUpdateTransform = false;
@@ -43,6 +43,11 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             {
                 if (Set(ref totalModelMatrix, value) || forceUpdateTransform)
                 {
+                    for (int i = 0; i < Items.Count; ++i)
+                    {
+                        Items[i].ParentMatrix = value;
+                        Items[i].NeedMatrixUpdate = true;
+                    }
                     TransformChanged(ref value);
                     OnTransformChanged?.Invoke(this, new TransformArgs(ref value));
                     RenderCore.ModelMatrix = value;
@@ -92,7 +97,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// <value>
         ///   <c>true</c> if [need matrix update]; otherwise, <c>false</c>.
         /// </value>
-        protected bool NeedMatrixUpdate { private set; get; } = true;
+        internal bool NeedMatrixUpdate { private set; get; } = true;
 
         private Matrix modelMatrix = Matrix.Identity;
 
@@ -115,28 +120,13 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             get { return modelMatrix; }
         }
 
-        private Matrix parentMatrix = Matrix.Identity;
-
         /// <summary>
         /// Gets or sets the parent matrix.
         /// </summary>
         /// <value>
         /// The parent matrix.
         /// </value>
-        public Matrix ParentMatrix
-        {
-            set
-            {
-                if (Set(ref parentMatrix, value))
-                {
-                    NeedMatrixUpdate = true;
-                }
-            }
-            get
-            {
-                return parentMatrix;
-            }
-        }
+        protected Matrix ParentMatrix = Matrix.Identity;
 
         private bool visible = true;
 
@@ -261,10 +251,6 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// <param name="totalTransform">The total transform.</param>
         protected virtual void TransformChanged(ref Matrix totalTransform)
         {
-            for (int i = 0; i < Items.Count; ++i)
-            {
-                Items[i].ParentMatrix = totalTransform;
-            }
         }
 
         /// <summary>
@@ -401,6 +387,10 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         protected virtual bool OnAttach(IRenderHost host)
         {
             RenderCore.Attach(renderTechnique);
+            foreach(var comp in Components)
+            {
+                comp.Attach();
+            }
             AssignDefaultValuesToCore(RenderCore);
             return RenderCore == null ? false : RenderCore.IsAttached;
         }
@@ -419,6 +409,10 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             {
                 IsAttached = false;
                 InvalidateSceneGraph();
+                foreach(var comp in Components)
+                {
+                    comp.Detach();
+                }
                 RenderCore.Detach();
                 OnDetach();
                 DisposeAndClear();
@@ -478,7 +472,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             }
             if (NeedMatrixUpdate || forceUpdateTransform)
             {
-                TotalModelMatrix = modelMatrix * parentMatrix;
+                TotalModelMatrix = modelMatrix * ParentMatrix;
                 NeedMatrixUpdate = false;
             }
         }

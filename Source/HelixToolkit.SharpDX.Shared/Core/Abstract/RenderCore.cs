@@ -104,7 +104,7 @@ namespace HelixToolkit.UWP.Core
         /// <summary>
         /// Model matrix
         /// </summary>
-        public Matrix ModelMatrix { set; get; } = Matrix.Identity;
+        public Matrix ModelMatrix = Matrix.Identity;
         /// <summary>
         /// 
         /// </summary>

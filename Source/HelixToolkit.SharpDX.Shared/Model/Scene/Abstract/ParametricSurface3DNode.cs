@@ -85,7 +85,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
                 IsTessellating = false;
                 if (result.IsCompleted)
                 {
-                    this.Geometry = result.Result;
+                    this.GeometryComp.Geometry = result.Result;
                 }
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }

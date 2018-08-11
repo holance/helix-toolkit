@@ -16,10 +16,11 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
 #endif
 {
     using Core;
+    using Components;
     /// <summary>
     /// 
     /// </summary>
-    public class PointNode : GeometryNode
+    public class PointNode : SceneNode
     {
         #region Properties
         /// <summary>
@@ -78,7 +79,21 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         {
             set; get;
         } = 4; 
+
+        public GeometryComponent GeometryComp { get; }
+        public ShadowComponent ShadowComp { get; }
+        public PostEffectComponent PostEffectComp { get; }
+        public RasterStateComponent RasterComp { get; }
         #endregion
+
+        public PointNode()
+        {
+            GeometryComp = AddComponent(new GeometryComponent(this, RenderCore as IGeometryRenderCore, OnCheckGeometry, OnCreateBufferModel));
+            ShadowComp = AddComponent(new ShadowComponent(RenderCore));
+            PostEffectComp = AddComponent(new PostEffectComponent(this));
+            RasterComp = AddComponent(new RasterStateComponent(RenderCore as IRasterStateParam));
+        }
+
 
         /// <summary>
         /// Distances the ray to point.
@@ -105,7 +120,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// <param name="modelGuid"></param>
         /// <param name="geometry"></param>
         /// <returns></returns>
-        protected override IAttachableBufferModel OnCreateBufferModel(Guid modelGuid, Geometry3D geometry)
+        protected virtual IAttachableBufferModel OnCreateBufferModel(Guid modelGuid, Geometry3D geometry)
         {
             return geometry != null && geometry.IsDynamic ? EffectsManager.GeometryBufferManager.Register<DynamicPointGeometryBufferModel>(modelGuid, geometry) 
                 : EffectsManager.GeometryBufferManager.Register<DefaultPointGeometryBufferModel>(modelGuid, geometry);
@@ -118,26 +133,6 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         protected override RenderCore OnCreateRenderCore()
         {
             return new PointRenderCore();
-        }
-
-        /// <summary>
-        /// Create raster state description.
-        /// </summary>
-        /// <returns></returns>
-        protected override RasterizerStateDescription CreateRasterState()
-        {
-            return new RasterizerStateDescription()
-            {
-                FillMode = FillMode.Solid,
-                CullMode = CullMode.Back,
-                DepthBias = DepthBias,
-                DepthBiasClamp = -1000,
-                SlopeScaledDepthBias = (float)SlopeScaledDepthBias,
-                IsDepthClipEnabled = IsDepthClipEnabled,
-                IsFrontCounterClockwise = false,
-                IsMultisampleEnabled = false,
-                IsScissorEnabled = IsThrowingShadow ? false : IsScissorEnabled
-            };
         }
 
         /// <summary>
@@ -175,9 +170,9 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// </summary>
         /// <param name="geometry">The geometry.</param>
         /// <returns></returns>
-        protected override bool OnCheckGeometry(Geometry3D geometry)
+        protected virtual bool OnCheckGeometry(Geometry3D geometry)
         {
-            return base.OnCheckGeometry(geometry) && geometry is PointGeometry3D;
+            return geometry is PointGeometry3D && !(geometry.Positions == null || geometry.Positions.Count == 0);
         }
 
         /// <summary>
@@ -190,7 +185,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// <returns></returns>
         protected override bool OnHitTest(RenderContext context, Matrix totalModelMatrix, ref Ray ray, ref List<HitTestResult> hits)
         {
-            return (Geometry as PointGeometry3D).HitTest(context, totalModelMatrix, ref ray, ref hits, this.WrapperSource, (float)HitTestThickness);
+            return (GeometryComp.Geometry as PointGeometry3D).HitTest(context, totalModelMatrix, ref ray, ref hits, this.WrapperSource, (float)HitTestThickness);
         }
     }
 }

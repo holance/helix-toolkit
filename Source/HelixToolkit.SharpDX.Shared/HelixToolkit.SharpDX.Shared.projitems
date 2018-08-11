@@ -119,6 +119,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\Animations\AnimationModels.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Camera\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Collection\Color4Collection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\DynamicReflectorComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\InvertNormalComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\RenderWireframeComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\TransformComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\ContextSharedResource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\EffectAttributes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Element2D\Element2DCore.cs" />
@@ -149,6 +153,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\OrderKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Scene\Abstract\ParametricSurface3DNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Scene\BatchedMeshNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\GeometryComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\IsTransparentComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\MaterialComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\PostEffectComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\RasterStateComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\ShadowComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Scene\DynamicCodeSurface3DNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Scene\AxisPlaneGridNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Scene\PostEffects\NodePostEffectXRayGrid.cs" />
@@ -305,6 +315,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\DisposeObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Disposer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Buffers\ElementsBufferProxy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\EntityComponent\Entity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\EntityComponent\EntityComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\EntityComponent\EntityComponentCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\FrameStatistics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\HitTestResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ImportExport\CMOReader.cs" />

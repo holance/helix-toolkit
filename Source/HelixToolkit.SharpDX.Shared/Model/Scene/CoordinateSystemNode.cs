@@ -154,7 +154,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         }
 
         private readonly BillboardNode axisBillboard = new BillboardNode();
-        private readonly MeshNode arrowMeshModel = new MeshNode() { EnableViewFrustumCheck = false };
+        private readonly MeshNode arrowMeshModel = new MeshNode();       
         private static readonly float arrowSize = 5.5f;
         private static readonly float arrowWidth = 0.6f;
         private static readonly float arrowHead = 1.7f;
@@ -164,11 +164,11 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// </summary>
         public CoordinateSystemNode()
         {          
-            arrowMeshModel.Material = new ColorMaterialCore();           
-            arrowMeshModel.CullMode = CullMode.Back;
+            arrowMeshModel.MaterialComp.Material = new ColorMaterialCore();           
+            arrowMeshModel.RasterComp.CullMode = CullMode.Back;
             arrowMeshModel.IsHitTestVisible = false;
             arrowMeshModel.RenderType = RenderType.ScreenSpaced;
-
+            arrowMeshModel.GeometryComp.EnableFrustumCheck = false;
             axisBillboard.IsHitTestVisible = false;
             axisBillboard.RenderType = RenderType.ScreenSpaced;
             axisBillboard.EnableViewFrustumCheck = false;
@@ -191,10 +191,10 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             builder.AddArrow(Vector3.Zero, new Vector3(0, 0, arrowSize), arrowWidth, arrowHead, 8);
 
             var mesh = builder.ToMesh();
-            arrowMeshModel.Geometry = mesh;
-            UpdateAxisColor(arrowMeshModel.Geometry, 0, AxisXColor, LabelX, LabelColor);
-            UpdateAxisColor(arrowMeshModel.Geometry, 1, AxisYColor, LabelY, LabelColor);
-            UpdateAxisColor(arrowMeshModel.Geometry, 2, AxisZColor, LabelZ, LabelColor);
+            arrowMeshModel.GeometryComp.Geometry = mesh;
+            UpdateAxisColor(arrowMeshModel.GeometryComp.Geometry, 0, AxisXColor, LabelX, LabelColor);
+            UpdateAxisColor(arrowMeshModel.GeometryComp.Geometry, 1, AxisYColor, LabelY, LabelColor);
+            UpdateAxisColor(arrowMeshModel.GeometryComp.Geometry, 2, AxisZColor, LabelZ, LabelColor);
         }
 
         private void UpdateAxisColor(int which, Color4 color)
@@ -214,7 +214,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
                     label = LabelZ;
                     break;
             }
-            UpdateAxisColor(arrowMeshModel.Geometry, which, color, label, LabelColor);
+            UpdateAxisColor(arrowMeshModel.GeometryComp.Geometry, which, color, label, LabelColor);
         }
 
         private void UpdateAxisLabel(int which, string label)
@@ -234,14 +234,14 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
                     color = AxisZColor;
                     break;
             }
-            UpdateAxisColor(arrowMeshModel.Geometry, which, color, label, LabelColor);
+            UpdateAxisColor(arrowMeshModel.GeometryComp.Geometry, which, color, label, LabelColor);
         }
 
         private void UpdateLabelColor(Color4 color)
         {
-            UpdateAxisColor(arrowMeshModel.Geometry, 0, AxisXColor, LabelX, LabelColor);
-            UpdateAxisColor(arrowMeshModel.Geometry, 1, AxisYColor, LabelY, LabelColor);
-            UpdateAxisColor(arrowMeshModel.Geometry, 2, AxisZColor, LabelZ, LabelColor);
+            UpdateAxisColor(arrowMeshModel.GeometryComp.Geometry, 0, AxisXColor, LabelX, LabelColor);
+            UpdateAxisColor(arrowMeshModel.GeometryComp.Geometry, 1, AxisYColor, LabelY, LabelColor);
+            UpdateAxisColor(arrowMeshModel.GeometryComp.Geometry, 2, AxisZColor, LabelZ, LabelColor);
         }
 
         /// <summary>

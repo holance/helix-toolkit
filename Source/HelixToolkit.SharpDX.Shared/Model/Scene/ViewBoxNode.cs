@@ -179,13 +179,15 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         public ViewBoxNode()
         {
             RelativeScreenLocationX = 0.8f;
-            ViewBoxMeshModel = new MeshNode() { EnableViewFrustumCheck = false, CullMode = CullMode.Back };
+            ViewBoxMeshModel = new MeshNode();
+            ViewBoxMeshModel.GeometryComp.EnableFrustumCheck = false;
+            ViewBoxMeshModel.RasterComp.CullMode = CullMode.Back;
             ViewBoxMeshModel.RenderType = RenderType.ScreenSpaced;
             var sampler = DefaultSamplers.LinearSamplerWrapAni1;
             sampler.BorderColor = Color.Gray;
             sampler.AddressU = sampler.AddressV = sampler.AddressW = TextureAddressMode.Border;
             this.AddChildNode(ViewBoxMeshModel);
-            ViewBoxMeshModel.Material = new ViewCubeMaterialCore()
+            ViewBoxMeshModel.MaterialComp.Material = new ViewCubeMaterialCore()
             {
                 DiffuseColor = Color.White,
                 DiffuseMapSampler = sampler
@@ -193,23 +195,24 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
 
             CornerModel = new InstancingMeshNode()
             {
-                EnableViewFrustumCheck = false,
-                Material = new DiffuseMaterialCore() { DiffuseColor = Color.Yellow },
-                Geometry = cornerGeometry,
-                Instances = cornerInstances,
                 Visible = false
             };
+            CornerModel.GeometryComp.EnableFrustumCheck = false;
+            CornerModel.MaterialComp.Material = new DiffuseMaterialCore() { DiffuseColor = Color.Yellow };
+            CornerModel.GeometryComp.Geometry = cornerGeometry;
+            CornerModel.GeometryComp.Instances = cornerInstances;
+          
             CornerModel.RenderType = RenderType.ScreenSpaced;
             this.AddChildNode(CornerModel);
 
             EdgeModel = new InstancingMeshNode()
             {
-                EnableViewFrustumCheck = false,
-                Material = new DiffuseMaterialCore() { DiffuseColor = Color.Silver },
-                Geometry = edgeGeometry,
-                Instances = edgeInstances,
                 Visible = false
             };
+            EdgeModel.GeometryComp.EnableFrustumCheck = false;
+            EdgeModel.MaterialComp.Material = new DiffuseMaterialCore() { DiffuseColor = Color.Silver };
+            EdgeModel.GeometryComp.Geometry = edgeGeometry;
+            EdgeModel.GeometryComp.Instances = edgeInstances;
             EdgeModel.RenderType = RenderType.ScreenSpaced;
             this.AddChildNode(EdgeModel);
             UpdateModel(UpDirection);
@@ -219,7 +222,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         {
             if (base.OnAttach(host))
             {
-                var material = (ViewBoxMeshModel.Material as ViewCubeMaterialCore);
+                var material = (ViewBoxMeshModel.MaterialComp.Material as ViewCubeMaterialCore);
                 if (material.DiffuseMap == null)
                 {
                     material.DiffuseMap = ViewBoxTexture ?? BitmapExtensions.CreateViewBoxTexture(host.EffectsManager,
@@ -245,7 +248,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
 
         private void UpdateTexture(Stream texture)
         {
-            (ViewBoxMeshModel.Material as PhongMaterialCore).DiffuseMap = texture;
+            (ViewBoxMeshModel.MaterialComp.Material as PhongMaterialCore).DiffuseMap = texture;
         }
 
         protected void UpdateModel(Vector3 up)
@@ -310,7 +313,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             newMesh.TextureCoordinates.AddRange(mesh.TextureCoordinates);
             newMesh.Colors.AddRange(Enumerable.Repeat(new Color4(1, 1, 1, 1), mesh.Positions.Count));
             newMesh.Normals = newMesh.CalculateNormals();
-            ViewBoxMeshModel.Geometry = newMesh;
+            ViewBoxMeshModel.GeometryComp.Geometry = newMesh;
         }
 
         private static void CreateTextureCoordinates(MeshGeometry3D mesh)

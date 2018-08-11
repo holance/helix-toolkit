@@ -78,11 +78,11 @@ namespace HelixToolkit.UWP
         {
             if(toDispose == null)
             { return default(T); }
-            else if(toDispose is IDisposable disposible)
+            else if(toDispose is IDisposable disposable)
             {
-                if (!Equals(toDispose, default(T)) && !disposables.Contains(disposible))
+                if (!Equals(toDispose, default(T)) && !disposables.Contains(disposable))
                 {
-                    disposables.Add(disposible);
+                    disposables.Add(disposable);
                 }
                 return toDispose;
             }
@@ -98,11 +98,11 @@ namespace HelixToolkit.UWP
         /// <param name="objectToDispose">Object to dispose.</param>
         public void RemoveAndDispose<T>(ref T objectToDispose)
         {
-            if (objectToDispose != null && objectToDispose is IDisposable disposible)
+            if (objectToDispose != null && objectToDispose is IDisposable disposable)
             {
-                Remove(disposible);
+                Remove(disposable);
                 // Dispose the component
-                disposible.Dispose();
+                disposable.Dispose();
                 objectToDispose = default(T);
             }
         }
@@ -114,12 +114,16 @@ namespace HelixToolkit.UWP
         /// <param name="toDisposeArg">To dispose.</param>
         public void Remove<T>(T toDisposeArg)
         {
-            if (toDisposeArg is IDisposable disposible)
+            if (toDisposeArg is IDisposable disposable)
             {
-                disposables.Remove(disposible);
+                disposables.Remove(disposable);
             }
         }
 
+        protected bool ContainsDisposible(object disposable)
+        {
+            return disposables.Contains(disposable);
+        }
         #region IDisposible
 
         /// <summary>
@@ -309,11 +313,11 @@ namespace HelixToolkit.UWP
         {
             if (toDispose == null)
             { return default(T); }
-            else if (toDispose is IDisposable disposible)
+            else if (toDispose is IDisposable disposable)
             {
-                if (!Equals(toDispose, default(T)) && !disposables.Contains(disposible))
+                if (!Equals(toDispose, default(T)) && !disposables.Contains(disposable))
                 {
-                    disposables.Add(disposible);
+                    disposables.Add(disposable);
                 }
                 return toDispose;
             }
@@ -329,11 +333,11 @@ namespace HelixToolkit.UWP
         /// <param name="objectToDispose">Object to dispose.</param>
         public void RemoveAndDispose<T>(ref T objectToDispose)
         {
-            if (objectToDispose != null && objectToDispose is IDisposable disposible)
+            if (objectToDispose != null && objectToDispose is IDisposable disposable)
             {
-                Remove(disposible);
+                Remove(disposable);
                 // Dispose the component
-                disposible.Dispose();
+                disposable.Dispose();
                 objectToDispose = default(T);
             }
         }
@@ -345,9 +349,9 @@ namespace HelixToolkit.UWP
         /// <param name="toDisposeArg">To dispose.</param>
         public void Remove<T>(T toDisposeArg)
         {
-            if (toDisposeArg is IDisposable disposible)
+            if (toDisposeArg is IDisposable disposable)
             {
-                disposables.Remove(disposible);
+                disposables.Remove(disposable);
             }
         }
 
