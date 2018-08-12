@@ -65,9 +65,8 @@ namespace HelixToolkit.Wpf.SharpDX.Controls
 
         private void OnMouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            RaiseEvent(new FormMouseWheelEventArgs(Mouse.PrimaryDevice, Environment.TickCount, e.Delta)
+            RaiseEvent(new FormMouseWheelEventArgs(FormMouseWheelEvent, Mouse.PrimaryDevice, Environment.TickCount, e.Delta)
             {
-                RoutedEvent = Mouse.MouseWheelEvent,
                 Source = this,
             });
         }
@@ -177,10 +176,33 @@ namespace HelixToolkit.Wpf.SharpDX.Controls
             }
         }
 
-        public sealed class FormMouseWheelEventArgs : MouseWheelEventArgs
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <seealso cref="System.Windows.Input.MouseWheelEventArgs" />
+        public sealed class FormMouseWheelEventArgs : RoutedEventArgs
         {
-            public FormMouseWheelEventArgs(MouseDevice mouse, int timestamp, int delta) : base(mouse, timestamp, delta)
-            { }
+            public readonly int Delta;
+            public readonly int Timestamp;
+            public readonly MouseDevice Mouse;
+            /// <summary>
+            /// Initializes a new instance of the <see cref="FormMouseWheelEventArgs"/> class.
+            /// </summary>
+            /// <param name="routedEvent"></param>
+            /// <param name="mouse">The mouse device associated with this event.</param>
+            /// <param name="timestamp">The time when the input occurred.</param>
+            /// <param name="delta">The amount the wheel has changed.</param>
+            public FormMouseWheelEventArgs(RoutedEvent routedEvent, MouseDevice mouse, int timestamp, int delta) : base(routedEvent)
+            {
+                Delta = delta;
+                Timestamp = timestamp;
+                Mouse = mouse;
+            }
+
+            public static implicit operator MouseWheelEventArgs(FormMouseWheelEventArgs args)
+            {
+                return new MouseWheelEventArgs(args.Mouse, args.Timestamp, args.Delta) { RoutedEvent = MouseWheelEvent };
+            }
         }
     }
 }
