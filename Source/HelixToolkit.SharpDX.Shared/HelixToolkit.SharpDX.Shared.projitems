@@ -119,7 +119,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\Animations\AnimationModels.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Camera\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Collection\Color4Collection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\BatchedGeometryComponents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Components\DynamicReflectorComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\HitTestComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Components\InvertNormalComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Components\RenderWireframeComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Components\TransformComponent.cs" />
@@ -127,7 +129,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\EffectAttributes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Element2D\Element2DCore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Element3D\Element3DCore.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Model\Element3D\GeometryBoundManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Components\GeometryBoundManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Geometry\BoneSkinnedMeshGeometry3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Material\ColorStripeMaterialCore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Material\DiffuseMaterialCore.cs" />
@@ -185,9 +187,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\Scene2D\RectangleNode2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Scene2D\StackPanelNode2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Scene2D\TextNode2D.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Model\Scene\Abstract\GeometryNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Scene\Abstract\GroupNodeBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Model\Scene\Abstract\MaterialGeometryNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Scene\BillboardNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Scene\BoneSkinMeshNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Scene\CoordinateSystemNode.cs" />

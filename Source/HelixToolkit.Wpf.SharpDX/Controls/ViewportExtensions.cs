@@ -44,13 +44,13 @@ namespace HelixToolkit.Wpf.SharpDX
             int count = 0;
             var totalModel = viewport.Renderables.PreorderDFT((x) => 
             {
-                if(x is GeometryNode g)
-                {
-                    if (g.Visible && g.Geometry != null && g.Geometry.Indices != null)
-                    {
-                        count += g.Geometry.Indices.Count / 3;
-                    }
-                }
+                //if(x is GeometryNode g)
+                //{
+                //    if (g.Visible && g.Geometry != null && g.Geometry.Indices != null)
+                //    {
+                //        count += g.Geometry.Indices.Count / 3;
+                //    }
+                //}
                 return true;
             }).Count();
             return count;

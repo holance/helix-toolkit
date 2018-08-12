@@ -27,6 +27,7 @@ namespace HelixToolkit.UWP.Core
     public abstract class StaticGeometryBatchingBufferBase<BatchedGeometry, VertStruct> : DisposeObject, IAttachableBufferModel
         where BatchedGeometry : struct, IBatchedGeometry where VertStruct : struct
     {
+        public bool IsNull { get; } = false;
         public Guid GUID { get; } = Guid.NewGuid();
         public event EventHandler<EventArgs> OnInvalidateRender;
         private bool isGeometryChanged = true;

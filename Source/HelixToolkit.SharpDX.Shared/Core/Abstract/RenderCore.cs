@@ -18,6 +18,7 @@ namespace HelixToolkit.UWP.Core
 {
     using Model;
     using Render;
+    using Model.Components;
     /// <summary>
     /// 
     /// </summary>
@@ -104,7 +105,7 @@ namespace HelixToolkit.UWP.Core
         /// <summary>
         /// Model matrix
         /// </summary>
-        public Matrix ModelMatrix = Matrix.Identity;
+        public Matrix ModelMatrix => transform.TotalModelTransform;
         /// <summary>
         /// 
         /// </summary>
@@ -119,6 +120,8 @@ namespace HelixToolkit.UWP.Core
         /// </summary>
         public bool IsAttached { private set; get; } = false;
         #endregion
+        private static readonly TransformComponent dummyTransform = new TransformComponent();
+        internal TransformComponent transform = dummyTransform;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCoreBase{TModelStruct}"/> class.

@@ -7,7 +7,7 @@ using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Runtime.CompilerServices;
 #if NETFX_CORE
 namespace HelixToolkit.UWP.Model.Scene
 #else
@@ -16,49 +16,18 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
 #endif
 {
     using Core;
-    using Render;
-    using System.Runtime.CompilerServices;
-
+    using Render;    
+    using Components;
     /// <summary>
     ///
     /// </summary>
     public abstract partial class SceneNode : Entity
     {
         #region Properties
-
         /// <summary>
         ///
         /// </summary>
         public sealed override Guid GUID { get { return RenderCore.GUID; } }
-
-        private Matrix totalModelMatrix = Matrix.Identity;
-        protected bool forceUpdateTransform = false;
-
-        /// <summary>
-        ///
-        /// </summary>
-        public Matrix TotalModelMatrix
-        {
-            private set
-            {
-                if (Set(ref totalModelMatrix, value) || forceUpdateTransform)
-                {
-                    for (int i = 0; i < Items.Count; ++i)
-                    {
-                        Items[i].ParentMatrix = value;
-                        Items[i].NeedMatrixUpdate = true;
-                    }
-                    TransformChanged(ref value);
-                    OnTransformChanged?.Invoke(this, new TransformArgs(ref value));
-                    RenderCore.ModelMatrix = value;
-                    forceUpdateTransform = false;
-                }
-            }
-            get
-            {
-                return totalModelMatrix;
-            }
-        }
         /// <summary>
         /// Gets or sets the order key.
         /// </summary>
@@ -82,51 +51,14 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         {
             set
             {
-                if(Set(ref renderOrder, value))
+                if (Set(ref renderOrder, value))
                 {
                     InvalidatePerFrameRenderables();
                 }
             }
             get { return renderOrder; }
         }
-                
 
-        /// <summary>
-        /// Gets or sets a value indicating whether [need matrix update].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [need matrix update]; otherwise, <c>false</c>.
-        /// </value>
-        internal bool NeedMatrixUpdate { private set; get; } = true;
-
-        private Matrix modelMatrix = Matrix.Identity;
-
-        /// <summary>
-        /// Gets or sets the model matrix.
-        /// </summary>
-        /// <value>
-        /// The model matrix.
-        /// </value>
-        public Matrix ModelMatrix
-        {
-            set
-            {
-                if (Set(ref modelMatrix, value))
-                {
-                    NeedMatrixUpdate = true;
-                    InvalidateRender();
-                }
-            }
-            get { return modelMatrix; }
-        }
-
-        /// <summary>
-        /// Gets or sets the parent matrix.
-        /// </summary>
-        /// <value>
-        /// The parent matrix.
-        /// </value>
-        protected Matrix ParentMatrix = Matrix.Identity;
 
         private bool visible = true;
 
@@ -160,7 +92,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         {
             private set
             {
-                if(Set(ref isRenderable, value))
+                if (Set(ref isRenderable, value))
                 {
                     InvalidatePerFrameRenderables();
                 }
@@ -243,22 +175,6 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// The effects technique.
         /// </value>
         public IRenderTechnique EffectTechnique { get { return renderTechnique; } }
-        #region Handling Transforms
-
-        /// <summary>
-        /// Transforms the changed.
-        /// </summary>
-        /// <param name="totalTransform">The total transform.</param>
-        protected virtual void TransformChanged(ref Matrix totalTransform)
-        {
-        }
-
-        /// <summary>
-        /// Occurs when [on transform changed].
-        /// </summary>
-        public event EventHandler<TransformArgs> OnTransformChanged;
-
-        #endregion Handling Transforms
 
         #region RenderCore
 
@@ -320,7 +236,20 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// The hit test source.
         /// </value>
         public object WrapperSource { internal set; get; }
-
+        /// <summary>
+        /// Gets the transform comp.
+        /// </summary>
+        /// <value>
+        /// The transform comp.
+        /// </value>
+        public TransformComponent TransformComp { get; }
+        /// <summary>
+        /// Gets the total model matrix.
+        /// </summary>
+        /// <value>
+        /// The total model matrix.
+        /// </value>
+        public Matrix TotalModelMatrix => TransformComp.TotalModelTransform;
         #endregion Properties
 
         #region Events
@@ -333,15 +262,44 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
 
         #endregion Events
 
+        #region Bounds     
+        /// <summary>
+        /// The original bounds, default set to max
+        /// </summary>
+        public virtual BoundingBox OriginalBounds { get; } = new BoundingBox(new Vector3(float.MinValue), new Vector3(float.MaxValue));
+        /// <summary>
+        /// The original bounds sphere, default set to max
+        /// </summary>
+        public virtual BoundingSphere OriginalBoundsSphere { get; } = new BoundingSphere(Vector3.Zero, float.MaxValue);
+        /// <summary>
+        /// The bounds, default set to max
+        /// </summary>
+        public virtual BoundingBox Bounds { get; } = new BoundingBox(new Vector3(float.MinValue), new Vector3(float.MaxValue));
+        /// <summary>
+        /// The bounds sphere, default set to max
+        /// </summary>
+        public virtual BoundingSphere BoundsSphere { get; } = new BoundingSphere(Vector3.Zero, float.MaxValue);
+        /// <summary>
+        /// The bound with transform, default set to max
+        /// </summary>
+        public virtual BoundingBox BoundsWithTransform { get; } = new BoundingBox(new Vector3(float.MinValue), new Vector3(float.MaxValue));
+        /// <summary>
+        /// The bound sphere with transform, default set to max
+        /// </summary>
+        public virtual BoundingSphere BoundsSphereWithTransform { get; } = new BoundingSphere(Vector3.Zero, float.MaxValue);
+        #endregion
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneNode"/> class.
         /// </summary>
         public SceneNode()
         {
             WrapperSource = this;
+            TransformComp = AddComponent(new TransformComponent());
             renderCore = new Lazy<RenderCore>(() => 
             {
                 var c = OnCreateRenderCore();
+                c.transform = TransformComp;
                 c.OnInvalidateRenderer += RenderCore_OnInvalidateRenderer;
                 return c;
             }, true);
@@ -470,11 +428,6 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             {
                 return;
             }
-            if (NeedMatrixUpdate || forceUpdateTransform)
-            {
-                TotalModelMatrix = modelMatrix * ParentMatrix;
-                NeedMatrixUpdate = false;
-            }
         }
         /// <summary>
         /// Updates the render order key.
@@ -561,7 +514,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         {
             if (CanHitTest(context))
             {
-                return OnHitTest(context, totalModelMatrix, ref ray, ref hits);
+                return OnHitTest(context, TransformComp.TotalModelTransform, ref ray, ref hits);
             }
             else
             {
@@ -594,77 +547,6 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         #endregion Hit Test
 
         #region IBoundable
-
-        /// <summary>
-        /// The maximum bound
-        /// </summary>
-        public static readonly BoundingBox MaxBound = new BoundingBox(new Vector3(float.MaxValue), new Vector3(float.MaxValue));
-
-        /// <summary>
-        /// The maximum bound sphere
-        /// </summary>
-        public static readonly BoundingSphere MaxBoundSphere = new BoundingSphere(Vector3.Zero, float.MaxValue);
-
-        /// <summary>
-        /// <see cref="IBoundable.OriginalBounds"/>
-        /// </summary>
-        /// <value>
-        /// The original bounds.
-        /// </value>
-        public virtual BoundingBox OriginalBounds { get { return MaxBound; } }
-
-        /// <summary>
-        /// <see cref="IBoundable.OriginalBoundsSphere"/>
-        /// </summary>
-        /// <value>
-        /// The original bounds sphere.
-        /// </value>
-        public virtual BoundingSphere OriginalBoundsSphere { get { return MaxBoundSphere; } }
-
-        /// <summary>
-        /// <see cref="IBoundable.Bounds"/>
-        /// </summary>
-        /// <value>
-        /// The bounds.
-        /// </value>
-        public virtual BoundingBox Bounds
-        {
-            get { return MaxBound; }
-        }
-
-        /// <summary>
-        /// <see cref="IBoundable.BoundsWithTransform"/>
-        /// </summary>
-        /// <value>
-        /// The bounds with transform.
-        /// </value>
-        public virtual BoundingBox BoundsWithTransform
-        {
-            get { return MaxBound; }
-        }
-
-        /// <summary>
-        /// <see cref="IBoundable.BoundsSphere"/>
-        /// </summary>
-        /// <value>
-        /// The bounds sphere.
-        /// </value>
-        public virtual BoundingSphere BoundsSphere
-        {
-            get { return MaxBoundSphere; }
-        }
-
-        /// <summary>
-        /// <see cref="IBoundable.BoundsSphereWithTransform"/>
-        /// </summary>
-        /// <value>
-        /// The bounds sphere with transform.
-        /// </value>
-        public virtual BoundingSphere BoundsSphereWithTransform
-        {
-            get { return MaxBoundSphere; }
-        }
-
         /// <summary>
         /// Gets or sets a value indicating whether this instance has bound.
         /// </summary>
@@ -672,62 +554,6 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         ///   <c>true</c> if this instance has bound; otherwise, <c>false</c>.
         /// </value>
         public bool HasBound { protected set; get; } = false;
-
-        /// <summary>
-        /// Occurs when [on bound changed].
-        /// </summary>
-        public event EventHandler<BoundChangeArgs<BoundingBox>> OnBoundChanged;
-
-        /// <summary>
-        /// Occurs when [on transform bound changed].
-        /// </summary>
-        public event EventHandler<BoundChangeArgs<BoundingBox>> OnTransformBoundChanged;
-
-        /// <summary>
-        /// Occurs when [on bound sphere changed].
-        /// </summary>
-        public event EventHandler<BoundChangeArgs<BoundingSphere>> OnBoundSphereChanged;
-
-        /// <summary>
-        /// Occurs when [on transform bound sphere changed].
-        /// </summary>
-        public event EventHandler<BoundChangeArgs<BoundingSphere>> OnTransformBoundSphereChanged;
-
-        /// <summary>
-        /// Raises the on transform bound changed.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        protected void RaiseOnTransformBoundChanged(BoundChangeArgs<BoundingBox> args)
-        {
-            OnTransformBoundChanged?.Invoke(this, args);
-        }
-
-        /// <summary>
-        /// Raises the on bound changed.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        protected void RaiseOnBoundChanged(BoundChangeArgs<BoundingBox> args)
-        {
-            OnBoundChanged?.Invoke(this, args);
-        }
-
-        /// <summary>
-        /// Raises the on transform bound sphere changed.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        protected void RaiseOnTransformBoundSphereChanged(BoundChangeArgs<global::SharpDX.BoundingSphere> args)
-        {
-            OnTransformBoundSphereChanged?.Invoke(this, args);
-        }
-
-        /// <summary>
-        /// Raises the on bound sphere changed.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        protected void RaiseOnBoundSphereChanged(BoundChangeArgs<global::SharpDX.BoundingSphere> args)
-        {
-            OnBoundSphereChanged?.Invoke(this, args);
-        }
 
         #endregion IBoundable
 
@@ -820,12 +646,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             }
             RenderCore.Dispose();
             OnVisibleChanged = null;
-            OnTransformChanged = null;
             OnSetRenderTechnique = null;
-            OnBoundChanged = null;
-            OnTransformBoundChanged = null;
-            OnBoundSphereChanged = null;
-            OnTransformBoundSphereChanged = null;
             OnAttached = null;
             OnDetached = null;
             WrapperSource = null;

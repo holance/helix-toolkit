@@ -46,8 +46,8 @@ namespace HelixToolkit.Wpf.SharpDX
         /// </summary>
         public event RoutedEventHandler MouseDown3D
         {
-            add { this.AddHandler(GeometryModel3D.MouseDown3DEvent, value); }
-            remove { this.RemoveHandler(GeometryModel3D.MouseDown3DEvent, value); }
+            add { this.AddHandler(Element3D.MouseDown3DEvent, value); }
+            remove { this.RemoveHandler(Element3D.MouseDown3DEvent, value); }
         }
 
         /// <summary>
@@ -55,8 +55,8 @@ namespace HelixToolkit.Wpf.SharpDX
         /// </summary>
         public event RoutedEventHandler MouseUp3D
         {
-            add { this.AddHandler(GeometryModel3D.MouseUp3DEvent, value); }
-            remove { this.RemoveHandler(GeometryModel3D.MouseUp3DEvent, value); }
+            add { this.AddHandler(Element3D.MouseUp3DEvent, value); }
+            remove { this.RemoveHandler(Element3D.MouseUp3DEvent, value); }
         }
 
         /// <summary>
@@ -64,8 +64,8 @@ namespace HelixToolkit.Wpf.SharpDX
         /// </summary>
         public event RoutedEventHandler MouseMove3D
         {
-            add { this.AddHandler(GeometryModel3D.MouseMove3DEvent, value); }
-            remove { this.RemoveHandler(GeometryModel3D.MouseMove3DEvent, value); }
+            add { this.AddHandler(Element3D.MouseMove3DEvent, value); }
+            remove { this.RemoveHandler(Element3D.MouseMove3DEvent, value); }
         }
         /// <summary>
         /// Occurs when [form mouse move].
@@ -74,6 +74,12 @@ namespace HelixToolkit.Wpf.SharpDX
         {
             add { this.AddHandler(WinformHostExtend.FormMouseMoveEvent, value); }
             remove { this.RemoveHandler(WinformHostExtend.FormMouseMoveEvent, value); }
+        }
+
+        public event WinformHostExtend.FormMouseWheelEventHandler FormMouseWheel
+        {
+            add { this.AddHandler(WinformHostExtend.FormMouseWheelEvent, value); }
+            remove { this.RemoveHandler(WinformHostExtend.FormMouseWheelEvent, value); }
         }
         /// <summary>
         /// The camera inertia factor property.

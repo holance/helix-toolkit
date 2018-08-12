@@ -15,6 +15,8 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Components
     /// </summary>
     public sealed class MaterialComponent : EntityComponent
     {
+        public event EventHandler OnMaterialChanged;
+
         private MaterialVariable materialVariable;
         private MaterialCore material;
         /// <summary>
@@ -27,11 +29,13 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Components
             {
                 if (Set(ref material, value) && node.IsAttached)
                 {
-                    AttachMaterial();
+                    AttachMaterial();                    
                     node.InvalidateRender();
                 }
             }
         }
+
+        public ushort MaterialVariableID => materialVariable == null ? (ushort)0 : materialVariable.ID;
 
         private readonly IMaterialRenderParams core;
         private readonly Func<MaterialCore, MaterialVariable> createMaterialVarFunc;
@@ -63,6 +67,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Components
             {
                 materialVariable = core.MaterialVariables = Collect(createMaterialVarFunc(material));
             }
+            OnMaterialChanged?.Invoke(this, EventArgs.Empty);
         }
         /// <summary>
         /// Attaches this instance.

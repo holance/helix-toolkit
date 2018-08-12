@@ -19,6 +19,15 @@ namespace HelixToolkit.Wpf.SharpDX.Controls
             remove { this.RemoveHandler(FormMouseMoveEvent, value); }
         }
 
+        public delegate void FormMouseWheelEventHandler(object sender, FormMouseWheelEventArgs e);
+        public static readonly RoutedEvent FormMouseWheelEvent =
+            EventManager.RegisterRoutedEvent("FormMouseWheel", RoutingStrategy.Bubble, typeof(FormMouseWheelEventHandler), typeof(WinformHostExtend));
+
+        public event FormMouseWheelEventHandler FormMouseWheel
+        {
+            add { this.AddHandler(FormMouseWheelEvent, value); }
+            remove { this.RemoveHandler(FormMouseWheelEvent, value); }
+        }
         protected UIElement ParentControl { set; get; }
 
         public double DPIXScale { set; get; } = 1;
@@ -56,7 +65,7 @@ namespace HelixToolkit.Wpf.SharpDX.Controls
 
         private void OnMouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            RaiseEvent(new MouseWheelEventArgs(Mouse.PrimaryDevice, Environment.TickCount, e.Delta)
+            RaiseEvent(new FormMouseWheelEventArgs(Mouse.PrimaryDevice, Environment.TickCount, e.Delta)
             {
                 RoutedEvent = Mouse.MouseWheelEvent,
                 Source = this,
@@ -125,7 +134,7 @@ namespace HelixToolkit.Wpf.SharpDX.Controls
             }
         }
 
-        public class FormMouseMoveEventArgs : RoutedEventArgs
+        public sealed class FormMouseMoveEventArgs : RoutedEventArgs
         {
             //
             // Summary:
@@ -166,6 +175,12 @@ namespace HelixToolkit.Wpf.SharpDX.Controls
                 Y = y;
                 Delta = delta;
             }
+        }
+
+        public sealed class FormMouseWheelEventArgs : MouseWheelEventArgs
+        {
+            public FormMouseWheelEventArgs(MouseDevice mouse, int timestamp, int delta) : base(mouse, timestamp, delta)
+            { }
         }
     }
 }

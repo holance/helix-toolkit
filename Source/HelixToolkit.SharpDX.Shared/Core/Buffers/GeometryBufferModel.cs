@@ -25,6 +25,7 @@ namespace HelixToolkit.UWP.Core
     {
         public event EventHandler OnVertexBufferUpdated;
         public event EventHandler OnIndexBufferUpdated;
+        public bool IsNull { get; } = false;
         /// <summary>
         /// Gets the unique identifier.
         /// </summary>

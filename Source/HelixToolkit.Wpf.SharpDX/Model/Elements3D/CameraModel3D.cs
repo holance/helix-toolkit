@@ -88,7 +88,7 @@ namespace HelixToolkit.Wpf.SharpDX
             }
             mesh.Colors = colors;
             this.Children.Add(arrowMeshModel);
-            SceneNode.OnTransformChanged += SceneNode_OnTransformChanged;
+            SceneNode.TransformComp.OnTransformChanged += SceneNode_OnTransformChanged;
         }
 
         protected override void OnMouse3DDown(object sender, RoutedEventArgs e)

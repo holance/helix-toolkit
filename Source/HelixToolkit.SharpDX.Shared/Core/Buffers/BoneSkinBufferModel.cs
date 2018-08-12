@@ -76,6 +76,7 @@ namespace HelixToolkit.UWP.Core
     /// </summary>
     public sealed class BoneSkinPreComputeBufferModel : DisposeObject, IAttachableBufferModel, IBoneSkinPreComputehBufferModel
     {
+        public bool IsNull { get; } = false;
         public PrimitiveTopology Topology { get => MeshBuffer.Topology; set => MeshBuffer.Topology = value; }
 
         public IElementsBufferProxy[] VertexBuffer { private set; get; } = new IElementsBufferProxy[0];

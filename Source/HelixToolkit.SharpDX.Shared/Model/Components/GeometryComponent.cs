@@ -118,7 +118,6 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Components
         private readonly SceneNode node;
         private readonly IGeometryRenderCore core;
         private readonly Func<Guid, Geometry3D, IAttachableBufferModel> createBufferFunc;
-        private readonly Func<Geometry3D, bool> checkGeoValidity;
         private IAttachableBufferModel bufferModelInternal;
         /// <summary>
         /// Gets a value indicating whether [geometry valid].
@@ -128,25 +127,18 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Components
         /// </value>
         public bool GeometryValid { get { return BoundManager.GeometryValid; } }       
 
-        public GeometryComponent(SceneNode node, IGeometryRenderCore renderCore, Func<Geometry3D, bool> checkGeometryValidFunction, Func<Guid, Geometry3D, IAttachableBufferModel> createBufferFunction)
+        public GeometryComponent(SceneNode node, IGeometryRenderCore renderCore, GeometryBoundManager boundManager,
+            Func<Guid, Geometry3D, IAttachableBufferModel> createBufferFunction)
         {
             this.node = node;
             core = renderCore;
+            BoundManager = boundManager;
+            BoundManager.Geometry = geometry;
             this.createBufferFunc = createBufferFunction;
-            this.checkGeoValidity = checkGeometryValidFunction;
-            if (node == null || core == null || createBufferFunc == null || checkGeoValidity == null)
+            if (node == null || core == null || createBufferFunc == null)
             {
                 throw new ArgumentNullException("Arguments cannot be null.");
             }
-            BoundManager = new GeometryBoundManager(node)
-            {
-                OnCheckGeometry = OnCheckGeometry
-            };
-        }
-
-        private bool OnCheckGeometry(Geometry3D geometry)
-        {
-            return checkGeoValidity(geometry);
         }
 
         private void CreateGeometryBuffer()

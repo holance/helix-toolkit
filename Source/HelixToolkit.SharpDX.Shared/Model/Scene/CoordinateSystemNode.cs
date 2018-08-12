@@ -171,12 +171,12 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             arrowMeshModel.GeometryComp.EnableFrustumCheck = false;
             axisBillboard.IsHitTestVisible = false;
             axisBillboard.RenderType = RenderType.ScreenSpaced;
-            axisBillboard.EnableViewFrustumCheck = false;
+            axisBillboard.GeometryComp.EnableFrustumCheck = false;
             var axisLabel = new BillboardText3D();
             axisLabel.TextInfo.Add(new TextInfo());
             axisLabel.TextInfo.Add(new TextInfo());
             axisLabel.TextInfo.Add(new TextInfo());
-            axisBillboard.Geometry = axisLabel;
+            axisBillboard.GeometryComp.Geometry = axisLabel;
             this.AddChildNode(arrowMeshModel);
             this.AddChildNode(axisBillboard);
             UpdateModel();
@@ -254,7 +254,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// <param name="labelColor"></param>
         protected void UpdateAxisColor(Geometry3D mesh, int which, Color4 color, string label, Color4 labelColor)
         {
-            var labelText = axisBillboard.Geometry as BillboardText3D;
+            var labelText = axisBillboard.GeometryComp.Geometry as BillboardText3D;
             switch (which)
             {
                 case 0:

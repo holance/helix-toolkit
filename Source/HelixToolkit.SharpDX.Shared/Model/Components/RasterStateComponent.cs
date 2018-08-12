@@ -33,7 +33,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Components
             get { return depthBias; }
         }
 
-        private float depthBiasClamp;
+        private float depthBiasClamp = -1000;
         /// <summary>
         /// Gets or sets the depth bias clamp.
         /// </summary>

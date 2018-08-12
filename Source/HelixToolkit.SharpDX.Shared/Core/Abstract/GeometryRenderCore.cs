@@ -58,7 +58,7 @@ namespace HelixToolkit.UWP.Core
             }
         }
 
-        private IAttachableBufferModel geometryBuffer;
+        private IAttachableBufferModel geometryBuffer = EmptyGeometryBufferModel.Empty;
         /// <summary>
         /// 
         /// </summary>
@@ -69,6 +69,10 @@ namespace HelixToolkit.UWP.Core
                 if(SetAffectsCanRenderFlag(ref geometryBuffer, value))
                 {
                     OnGeometryBufferChanged(value);
+                    if (geometryBuffer == null)
+                    {
+                        geometryBuffer = EmptyGeometryBufferModel.Empty;
+                    }
                 }
             }
             get { return geometryBuffer; }
@@ -274,13 +278,17 @@ namespace HelixToolkit.UWP.Core
         /// <returns></returns>
         protected override bool OnUpdateCanRenderFlag()
         {
-            return base.OnUpdateCanRenderFlag() && GeometryBuffer != null;
+            return base.OnUpdateCanRenderFlag() && !GeometryBuffer.IsNull;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DrawIndexed(DeviceContextProxy context, IElementsBufferProxy indexBuffer, IElementsBufferModel instanceModel)
         {
-            if (instanceModel == null || !instanceModel.HasElements)
+            if(indexBuffer == null)
+            {
+                return;
+            }
+            else if (instanceModel == null || !instanceModel.HasElements)
             {
                 context.DrawIndexed(indexBuffer.ElementCount, 0, 0);
             }
@@ -293,7 +301,11 @@ namespace HelixToolkit.UWP.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DrawPoints(DeviceContextProxy context, IElementsBufferProxy vertexBuffer, IElementsBufferModel instanceModel)
         {
-            if (instanceModel == null || !instanceModel.HasElements)
+            if(vertexBuffer == null)
+            {
+                return;
+            }
+            else if (instanceModel == null || !instanceModel.HasElements)
             {
                 context.Draw(vertexBuffer.ElementCount, 0);
             }

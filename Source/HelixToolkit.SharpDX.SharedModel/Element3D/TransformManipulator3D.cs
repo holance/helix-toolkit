@@ -611,7 +611,7 @@ namespace HelixToolkit.Wpf.SharpDX
             else
             {
                 //target.SceneNode.OnTransformChanged += SceneNode_OnTransformChanged;
-                SceneNode_OnTransformChanged(target.SceneNode, new TransformArgs(target.SceneNode.ModelMatrix));
+                SceneNode_OnTransformChanged(target.SceneNode, new TransformArgs(target.SceneNode.TransformComp.ModelMatrix));
             }
         }
 

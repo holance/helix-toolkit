@@ -19,8 +19,9 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
     /// <summary>
     ///
     /// </summary>
-    public class MeshNode : SceneNode
+    public class MeshNode : SceneNode, IBoundable
     {
+        public GeometryBoundManager BoundManager { get; }
         public GeometryComponent GeometryComp { get; }
         public MaterialComponent MaterialComp { get; }
         public RasterStateComponent RasterComp { get; }
@@ -35,9 +36,22 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
 
         public RenderWireframeComponent WireframeComp { get; }
 
+        public sealed override BoundingBox OriginalBounds => BoundManager.OriginalBounds;
+
+        public sealed override BoundingSphere OriginalBoundsSphere => BoundManager.OriginalBoundsSphere;
+
+        public sealed override BoundingBox Bounds => BoundManager.Bounds;
+
+        public sealed override BoundingSphere BoundsSphere => BoundManager.BoundsSphere;
+
+        public sealed override BoundingSphere BoundsSphereWithTransform => BoundManager.BoundsSphereWithTransform;
+
+        public sealed override BoundingBox BoundsWithTransform => BoundManager.BoundsWithTransform;
+
         public MeshNode()
         {
-            GeometryComp = AddComponent(new GeometryComponent(this, RenderCore as IGeometryRenderCore, OnCheckGeometry, OnCreateBufferModel));
+            BoundManager = AddComponent(new GeometryBoundManager(this, OnCheckGeometry));
+            GeometryComp = AddComponent(new GeometryComponent(this, RenderCore as IGeometryRenderCore, BoundManager, OnCreateBufferModel));
             MaterialComp = AddComponent(new MaterialComponent(this, RenderCore as IMaterialRenderParams, OnCreateMaterial));
             RasterComp = AddComponent(new RasterStateComponent(RenderCore as IRasterStateParam));
             IsTransparentComp = AddComponent(new IsTransparentComponent(this));

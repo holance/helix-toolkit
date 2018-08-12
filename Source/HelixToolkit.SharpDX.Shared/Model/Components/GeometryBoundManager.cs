@@ -7,16 +7,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 #if NETFX_CORE
-namespace HelixToolkit.UWP.Core
+namespace HelixToolkit.UWP.Model.Components
 #else
-namespace HelixToolkit.Wpf.SharpDX.Core
+namespace HelixToolkit.Wpf.SharpDX.Model.Components
 #endif
 {
-    using Model.Scene;
+    using Scene;
     using System;
-    using BoundingSphere = global::SharpDX.BoundingSphere;
 
-    public sealed class GeometryBoundManager : IDisposable
+    public sealed class GeometryBoundManager : EntityComponent, IBoundManager
     {
         #region Properties
         private Geometry3D geometry = null;
@@ -162,15 +161,19 @@ namespace HelixToolkit.Wpf.SharpDX.Core
             OnBoundSphereChanged?.Invoke(elementCore, new BoundChangeArgs<BoundingSphere>(ref newBoundSphere, ref oldBoundSphere));
         }
         #endregion
-        public delegate bool OnCheckGeometryDelegate(Geometry3D geometry);
-        public OnCheckGeometryDelegate OnCheckGeometry; 
+        public readonly Func<Geometry3D, bool> OnCheckGeometry; 
 
         private SceneNode elementCore;
 
-        public GeometryBoundManager(SceneNode core)
+        public GeometryBoundManager(SceneNode core, Func<Geometry3D, bool> checkGeometry)
         {
             this.elementCore = core;
-            core.OnTransformChanged += OnTransformChanged;
+            OnCheckGeometry = checkGeometry;
+            core.TransformComp.OnTransformChanged += OnTransformChanged;
+            if(OnCheckGeometry == null)
+            {
+                throw new ArgumentNullException("checkGeometry argument is null.");
+            }
         }
 
         private void OnGeometryPropertyChangedPrivate(object sender, PropertyChangedEventArgs e)
@@ -288,50 +291,27 @@ namespace HelixToolkit.Wpf.SharpDX.Core
             }
         }
 
-        public void DisposeAndClear()
+        protected override void OnDispose(bool disposeManagedResources)
         {
-            Geometry = null;
-        }
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        void Dispose(bool disposing)
-        {
-            if (!disposedValue)
+            if (disposeManagedResources)
             {
-                if (disposing)
-                {
-                    if (geometry != null)
-                    { geometry.PropertyChanged -= OnGeometryPropertyChangedPrivate; }
-                    elementCore.OnTransformChanged -= OnTransformChanged;
-                    OnBoundChanged = null;
-                    OnTransformBoundChanged = null;
-                    OnBoundSphereChanged = null;
-                    OnTransformBoundSphereChanged = null;
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
-                disposedValue = true;
+                if (geometry != null)
+                { geometry.PropertyChanged -= OnGeometryPropertyChangedPrivate; }
+                elementCore.TransformComp.OnTransformChanged -= OnTransformChanged;
+                OnBoundChanged = null;
+                OnTransformBoundChanged = null;
+                OnBoundSphereChanged = null;
+                OnTransformBoundSphereChanged = null;
             }
+            base.OnDispose(disposeManagedResources);
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~GeometryBoundManager() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
+        protected override void OnAttach()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
         }
-        #endregion
+
+        protected override void OnDetach()
+        {
+        }
     }
 }

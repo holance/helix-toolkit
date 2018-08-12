@@ -18,7 +18,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
     /// <summary>
     /// 
     /// </summary>
-    public class LineNode : SceneNode
+    public class LineNode : SceneNode, IBoundable
     {
         #region Properties
         /// <summary>
@@ -62,19 +62,32 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         public double HitTestThickness
         {
             set; get;
-        } = 1.0; 
+        } = 1.0;
         #endregion
-
+        public GeometryBoundManager BoundManager { get; }
         public GeometryComponent GeometryComp { get; }
         public ShadowComponent ShadowComp { get; }
 
         public RasterStateComponent RasterComp { get; }
 
         public PostEffectComponent PostEffectComp { get; }
-        
+
+        public sealed override BoundingBox OriginalBounds => GeometryComp.BoundManager.OriginalBounds;
+
+        public sealed override BoundingSphere OriginalBoundsSphere => GeometryComp.BoundManager.OriginalBoundsSphere;
+
+        public sealed override BoundingBox Bounds => GeometryComp.BoundManager.Bounds;
+
+        public sealed override BoundingSphere BoundsSphere => GeometryComp.BoundManager.BoundsSphere;
+
+        public sealed override BoundingSphere BoundsSphereWithTransform => GeometryComp.BoundManager.BoundsSphereWithTransform;
+
+        public sealed override BoundingBox BoundsWithTransform => GeometryComp.BoundManager.BoundsWithTransform;
+
         public LineNode()
         {
-            GeometryComp = AddComponent(new GeometryComponent(this, RenderCore as IGeometryRenderCore, OnCheckGeometry, OnCreateBufferModel));
+            BoundManager = AddComponent(new GeometryBoundManager(this, OnCheckGeometry));
+            GeometryComp = AddComponent(new GeometryComponent(this, RenderCore as IGeometryRenderCore, BoundManager, OnCreateBufferModel));
             ShadowComp = AddComponent(new ShadowComponent(RenderCore));
             RasterComp = AddComponent(new RasterStateComponent(RenderCore as IRasterStateParam));
             PostEffectComp = AddComponent(new PostEffectComponent(this));

@@ -20,6 +20,7 @@ namespace HelixToolkit.UWP.Core
     public sealed class EmptyGeometryBufferModel : IGeometryBufferModel
     {
         public static readonly IGeometryBufferModel Empty = new EmptyGeometryBufferModel();
+        public bool IsNull { get; } = true;
         /// <summary>
         /// Gets or sets the geometry.
         /// </summary>

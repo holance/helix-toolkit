@@ -125,20 +125,6 @@ namespace HelixToolkit.Wpf.SharpDX
         /// </value>
         bool HasBound { get; }
         /// <summary>
-        /// Gets the original bound from the geometry. Same as <see cref="Geometry3D.Bound"/>
-        /// </summary>
-        /// <value>
-        /// The original bound.
-        /// </value>
-        BoundingBox OriginalBounds { get; }
-        /// <summary>
-        /// Gets the original bound sphere from the geometry. Same as <see cref="Geometry3D.BoundingSphere"/> 
-        /// </summary>
-        /// <value>
-        /// The original bound sphere.
-        /// </value>
-        BoundingSphere OriginalBoundsSphere { get; }
-        /// <summary>
         /// Gets the bounds. Usually same as <see cref="OriginalBounds"/>. If have instances, the bound will enclose all instances.
         /// </summary>
         /// <value>
@@ -166,6 +152,12 @@ namespace HelixToolkit.Wpf.SharpDX
         /// The bounds sphere with transform.
         /// </value>
         BoundingSphere BoundsSphereWithTransform { get; }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface IBoundManager
+    {
         /// <summary>
         /// Occurs when [on bound changed].
         /// </summary>

@@ -27,7 +27,7 @@ namespace HelixToolkit.Wpf.SharpDX.Render
     using HelixToolkit.Logger;
     using Model.Scene;
     using Model.Scene2D;
-
+    using Model.Components;
 
     /// <summary>
     /// 
@@ -82,6 +82,7 @@ namespace HelixToolkit.Wpf.SharpDX.Render
         /// </summary>
         private readonly List<RenderCore> needUpdateCores = new List<RenderCore>();
 
+        private readonly List<TransformComponent> transformComponents = new List<TransformComponent>();
         /// <summary>
         /// Gets the current frame flattened scene graph. KeyValuePair.Key is the depth of the node.
         /// </summary>
@@ -201,6 +202,7 @@ namespace HelixToolkit.Wpf.SharpDX.Render
                         }
                         continue;
                     }
+                    transformComponents.Add(renderable.Value.TransformComp);
                     if (renderable.Value.RenderCore.NeedUpdate) // Run update function at the beginning of actual rendering.
                     {
                         needUpdateCores.Add(renderable.Value.RenderCore);
@@ -281,6 +283,20 @@ namespace HelixToolkit.Wpf.SharpDX.Render
                         needUpdateCores.Add(renderable.Value.RenderCore);
                     }
                     ++i;
+                }
+            }
+            for(int i = 0; i < transformComponents.Count; ++i)
+            {
+                if (transformComponents[i].NeedsRecompute)
+                {
+                    transformComponents[i].Compute();
+                }
+            }
+            for (int i = 0; i < transformComponents.Count; ++i)
+            {
+                if (transformComponents[i].TotalModelTransformChanged)
+                {
+                    transformComponents[i].RaiseTransformChanged();
                 }
             }
             //Get RenderCores with post effect specified.
@@ -477,6 +493,7 @@ namespace HelixToolkit.Wpf.SharpDX.Render
             }
             if (clearPerFrameRenderables)
             {
+                transformComponents.Clear();
                 opaqueNodes.Clear();
                 transparentNodes.Clear();
                 particleNodes.Clear();

@@ -480,38 +480,41 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         #endregion
 
         #region IBoundable
+        private static readonly BoundingBox MaxBound = new BoundingBox();
+        private static readonly BoundingSphere MaxBoundSphere = new BoundingSphere();
+
         private BoundingBox originalBound = MaxBound;
-        public override BoundingBox OriginalBounds
+        public BoundingBox OriginalBounds
         {
             get { return originalBound; }
         }
 
         private BoundingSphere originalBoundsSphere = MaxBoundSphere;
-        public override BoundingSphere OriginalBoundsSphere
+        public BoundingSphere OriginalBoundsSphere
         {
             get { return originalBoundsSphere; }
         }
 
         private BoundingBox bounds = MaxBound;
-        public override BoundingBox Bounds
+        public BoundingBox Bounds
         {
             get { return bounds; }
         }
 
         private BoundingBox boundsWithTransform = MaxBound;
-        public override BoundingBox BoundsWithTransform
+        public BoundingBox BoundsWithTransform
         {
             get { return boundsWithTransform; }
         }
 
         private BoundingSphere boundsSphere;
-        public override BoundingSphere BoundsSphere
+        public BoundingSphere BoundsSphere
         {
             get { return boundsSphere; }
         }
 
         private BoundingSphere boundsSphereWithTransform;
-        public override BoundingSphere BoundsSphereWithTransform
+        public BoundingSphere BoundsSphereWithTransform
         {
             get { return boundsSphereWithTransform; }
         }
@@ -650,24 +653,20 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
                 var old = bounds;
                 if (Set(ref bounds, newBound))
                 {
-                    RaiseOnBoundChanged(new BoundChangeArgs<BoundingBox>(ref bounds, ref old));
                 }
                 var oldS = boundsSphere;
                 if (Set(ref boundsSphere, newBoundSphere))
                 {
-                    RaiseOnBoundSphereChanged(new BoundChangeArgs<BoundingSphere>(ref boundsSphere, ref oldS));
                 }
             }
 
             var oldT = boundsWithTransform;
-            if (Set(ref boundsWithTransform, bounds.Transform(ModelMatrix)))
+            if (Set(ref boundsWithTransform, bounds.Transform(TransformComp.ModelMatrix)))
             {
-                RaiseOnTransformBoundChanged(new BoundChangeArgs<BoundingBox>(ref boundsWithTransform, ref oldT));
             }
             var oldTS = boundsSphereWithTransform;
-            if (Set(ref boundsSphereWithTransform, boundsSphere.TransformBoundingSphere(ModelMatrix)))
+            if (Set(ref boundsSphereWithTransform, boundsSphere.TransformBoundingSphere(TransformComp.ModelMatrix)))
             {
-                RaiseOnTransformBoundSphereChanged(new BoundChangeArgs<BoundingSphere>(ref boundsSphereWithTransform, ref oldTS));
             }
         }
         /// <summary>

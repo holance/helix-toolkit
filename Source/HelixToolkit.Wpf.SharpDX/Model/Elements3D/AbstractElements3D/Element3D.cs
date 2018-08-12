@@ -74,7 +74,8 @@ namespace HelixToolkit.Wpf.SharpDX
             DependencyProperty.Register("Transform", typeof(Transform3D), typeof(Element3D), new PropertyMetadata(Transform3D.Identity,
                 (d,e)=>
                 {
-                    (d as Element3D).SceneNode.ModelMatrix = e.NewValue != null ? (e.NewValue as Transform3D).Value.ToMatrix() : Matrix.Identity;
+                    (d as Element3D).SceneNode.TransformComp.ModelMatrix = e.NewValue != null ? (e.NewValue as Transform3D).Value.ToMatrix() : Matrix.Identity;
+                    (d as Element3D).SceneNode.InvalidateRender();
                 }));
         /// <summary>
         /// 

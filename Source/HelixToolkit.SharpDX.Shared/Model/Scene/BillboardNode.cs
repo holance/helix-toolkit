@@ -14,11 +14,12 @@ namespace HelixToolkit.UWP.Model.Scene
 namespace HelixToolkit.Wpf.SharpDX.Model.Scene
 #endif
 {
+    using Components;
     using Core;
     /// <summary>
     /// 
     /// </summary>
-    public class BillboardNode : GeometryNode
+    public class BillboardNode : SceneNode, IBoundable
     {
         /// <summary>
         /// Gets or sets a value indicating whether [fixed size].
@@ -35,25 +36,6 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             get { return (RenderCore as IBillboardRenderParams).FixedSize; }
         }
 
-        private bool isTransparent = false;
-        /// <summary>
-        /// Specifiy if model material is transparent. 
-        /// During rendering, transparent objects are rendered after opaque objects. Transparent objects' order in scene graph are preserved.
-        /// </summary>
-        public bool IsTransparent
-        {
-            get { return isTransparent; }
-            set
-            {
-                if (Set(ref isTransparent, value))
-                {
-                    if (RenderCore.RenderType == RenderType.Opaque || RenderCore.RenderType == RenderType.Transparent)
-                    {
-                        RenderCore.RenderType = value ? RenderType.Transparent : RenderType.Opaque;
-                    }
-                }
-            }
-        }
         /// <summary>
         /// Gets or sets the sampler description.
         /// </summary>
@@ -71,6 +53,32 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
                 return (RenderCore as IBillboardRenderParams).SamplerDescription;
             }
         }
+        public GeometryBoundManager BoundManager { get; }
+        public GeometryComponent GeometryComp { get; }
+        public IsTransparentComponent IsTransparentComp { get; }
+        public RasterStateComponent RasterComp { get; }
+        public PostEffectComponent PostEffectComp { get; }
+
+        public sealed override BoundingBox OriginalBounds => BoundManager.OriginalBounds;
+
+        public sealed override BoundingSphere OriginalBoundsSphere => BoundManager.OriginalBoundsSphere;
+
+        public sealed override BoundingBox Bounds => BoundManager.Bounds;
+
+        public sealed override BoundingSphere BoundsSphere => BoundManager.BoundsSphere;
+
+        public sealed override BoundingSphere BoundsSphereWithTransform => BoundManager.BoundsSphereWithTransform;
+
+        public sealed override BoundingBox BoundsWithTransform => BoundManager.BoundsWithTransform;
+
+        public BillboardNode()
+        {
+            BoundManager = AddComponent(new GeometryBoundManager(this, OnCheckGeometry));
+            GeometryComp = AddComponent(new GeometryComponent(this, RenderCore as IGeometryRenderCore, BoundManager, OnCreateBufferModel));
+            IsTransparentComp = AddComponent(new IsTransparentComponent(this));
+            RasterComp = AddComponent(new RasterStateComponent(RenderCore as IRasterStateParam));
+            PostEffectComp = AddComponent(new PostEffectComponent(this));
+        }
 
         /// <summary>
         /// Called when [create render core].
@@ -87,7 +95,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// <param name="modelGuid"></param>
         /// <param name="geometry"></param>
         /// <returns></returns>
-        protected override IAttachableBufferModel OnCreateBufferModel(Guid modelGuid, Geometry3D geometry)
+        protected virtual IAttachableBufferModel OnCreateBufferModel(Guid modelGuid, Geometry3D geometry)
         {
             return geometry != null && geometry.IsDynamic ? EffectsManager.GeometryBufferManager.Register<DynamicBillboardBufferModel>(modelGuid, geometry) 
                 : EffectsManager.GeometryBufferManager.Register<DefaultBillboardBufferModel>(modelGuid, geometry);
@@ -108,11 +116,11 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
 
         public override bool TestViewFrustum(ref BoundingFrustum viewFrustum)
         {
-            if (!EnableViewFrustumCheck)
+            if (!GeometryComp.EnableFrustumCheck)
             {
                 return true;
             }
-            return BoundingFrustumExtensions.Intersects(ref viewFrustum, ref BoundManager.BoundsSphereWithTransform);// viewFrustum.Intersects(ref sphere);
+            return BoundingFrustumExtensions.Intersects(ref viewFrustum, ref GeometryComp.BoundManager.BoundsSphereWithTransform);// viewFrustum.Intersects(ref sphere);
         }
 
         /// <summary>
@@ -120,30 +128,9 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// </summary>
         /// <param name="geometry">The geometry.</param>
         /// <returns></returns>
-        protected override bool OnCheckGeometry(Geometry3D geometry)
+        protected virtual bool OnCheckGeometry(Geometry3D geometry)
         {
             return geometry is IBillboardText;
-        }
-        /// <summary>
-        /// Create raster state description.
-        /// </summary>
-        /// <returns></returns>
-        protected override RasterizerStateDescription CreateRasterState()
-        {
-            return new RasterizerStateDescription()
-            {
-                FillMode = FillMode.Solid,
-                CullMode = CullMode.None,
-                DepthBias = DepthBias,
-                DepthBiasClamp = -1000,
-                SlopeScaledDepthBias = (float)SlopeScaledDepthBias,
-                IsDepthClipEnabled = true,
-                IsFrontCounterClockwise = false,
-
-                IsMultisampleEnabled = false,
-                //IsAntialiasedLineEnabled = true,                    
-                IsScissorEnabled = IsThrowingShadow ? false : IsScissorEnabled,
-            };
         }
 
         /// <summary>
@@ -156,7 +143,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// <returns></returns>
         protected override bool OnHitTest(RenderContext context, Matrix totalModelMatrix, ref Ray ray, ref List<HitTestResult> hits)
         {
-            return (Geometry as BillboardBase).HitTest(context, totalModelMatrix, ref ray, ref hits, this.WrapperSource, FixedSize);
+            return (GeometryComp.Geometry as BillboardBase).HitTest(context, totalModelMatrix, ref ray, ref hits, this.WrapperSource, FixedSize);
         }
     }
 }

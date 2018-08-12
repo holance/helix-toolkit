@@ -68,11 +68,12 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             {
                 itemHashSet.Add(node.GUID, node);
                 Items.Add(node);
+                TransformComp.AddChild(node.TransformComp);
+                node.TransformComp.Compute(true);
                 if (IsAttached)
                 {
                     node.Attach(RenderHost);
-                }
-                forceUpdateTransform = true;
+                }               
                 OnAddChildNode?.Invoke(this, new OnChildNodeChangedArgs(node, Operation.Add));
                 return true;
             }
@@ -102,6 +103,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             {
                 node.Detach();
                 Items.Remove(node);
+                TransformComp.RemoveChild(node.TransformComp);
                 OnRemoveChildNode?.Invoke(this, new OnChildNodeChangedArgs(node, Operation.Remove));
                 return true;
             }

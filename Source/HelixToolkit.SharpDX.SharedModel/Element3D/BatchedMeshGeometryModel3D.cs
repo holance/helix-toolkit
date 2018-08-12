@@ -40,7 +40,7 @@ namespace HelixToolkit.Wpf.SharpDX
             DependencyProperty.Register("BatchedGeometries", typeof(IList<BatchedMeshGeometryConfig>), typeof(BatchedMeshGeometryModel3D), new PropertyMetadata(null, 
                 (d, e)=> 
                 {
-                    ((d as BatchedMeshGeometryModel3D).SceneNode as BatchedMeshNode).Geometries = e.NewValue == null ? null : ((IList<BatchedMeshGeometryConfig>)e.NewValue).ToArray();
+                    ((d as BatchedMeshGeometryModel3D).SceneNode as BatchedMeshNode).BatchedGeometryComp.Geometries = e.NewValue == null ? null : ((IList<BatchedMeshGeometryConfig>)e.NewValue).ToArray();
                 }));
 
         public IList<Material> BatchedMaterials
@@ -53,7 +53,7 @@ namespace HelixToolkit.Wpf.SharpDX
             DependencyProperty.Register("BatchedMaterials", typeof(IList<Material>), typeof(BatchedMeshGeometryModel3D), new PropertyMetadata(null, 
                 (d, e) =>
                 {
-                    ((d as BatchedMeshGeometryModel3D).SceneNode as BatchedMeshNode).Materials = e.NewValue == null ?
+                    ((d as BatchedMeshGeometryModel3D).SceneNode as BatchedMeshNode).BatchedGeometryComp.Materials = e.NewValue == null ?
                     null : ((IList<Material>)e.NewValue).Where(x => x.Core is PhongMaterialCore).Select(x=>x.Core as PhongMaterialCore).ToArray();
                 }));
 
@@ -72,7 +72,7 @@ namespace HelixToolkit.Wpf.SharpDX
         public static readonly DependencyProperty DepthBiasProperty =
             DependencyProperty.Register("DepthBias", typeof(int), typeof(BatchedMeshGeometryModel3D), new PropertyMetadata(0, (d, e) =>
             {
-                ((d as Element3DCore).SceneNode as BatchedMeshNode).DepthBias = (int)e.NewValue;
+                ((d as Element3DCore).SceneNode as BatchedMeshNode).RasterComp.DepthBias = (int)e.NewValue;
             }));
         /// <summary>
         /// The slope scaled depth bias property
@@ -80,7 +80,7 @@ namespace HelixToolkit.Wpf.SharpDX
         public static readonly DependencyProperty SlopeScaledDepthBiasProperty =
             DependencyProperty.Register("SlopeScaledDepthBias", typeof(double), typeof(BatchedMeshGeometryModel3D), new PropertyMetadata(0.0, (d, e) =>
             {
-                ((d as Element3DCore).SceneNode as BatchedMeshNode).SlopeScaledDepthBias = (float)(double)e.NewValue;
+                ((d as Element3DCore).SceneNode as BatchedMeshNode).RasterComp.SlopeScaledDepthBias = (float)(double)e.NewValue;
             }));
         /// <summary>
         /// The is selected property
@@ -93,7 +93,7 @@ namespace HelixToolkit.Wpf.SharpDX
         public static readonly DependencyProperty IsMultisampleEnabledProperty =
             DependencyProperty.Register("IsMultisampleEnabled", typeof(bool), typeof(BatchedMeshGeometryModel3D), new PropertyMetadata(true, (d, e) =>
             {
-                ((d as Element3DCore).SceneNode as BatchedMeshNode).IsMSAAEnabled = (bool)e.NewValue;
+                ((d as Element3DCore).SceneNode as BatchedMeshNode).RasterComp.IsMSAAEnabled = (bool)e.NewValue;
             }));
         /// <summary>
         /// The fill mode property
@@ -101,7 +101,7 @@ namespace HelixToolkit.Wpf.SharpDX
         public static readonly DependencyProperty FillModeProperty = DependencyProperty.Register("FillMode", typeof(FillMode), typeof(BatchedMeshGeometryModel3D),
             new PropertyMetadata(FillMode.Solid, (d, e) =>
             {
-                ((d as Element3DCore).SceneNode as BatchedMeshNode).FillMode = (FillMode)e.NewValue;
+                ((d as Element3DCore).SceneNode as BatchedMeshNode).RasterComp.FillMode = (FillMode)e.NewValue;
             }));
         /// <summary>
         /// The is scissor enabled property
@@ -109,7 +109,7 @@ namespace HelixToolkit.Wpf.SharpDX
         public static readonly DependencyProperty IsScissorEnabledProperty =
             DependencyProperty.Register("IsScissorEnabled", typeof(bool), typeof(BatchedMeshGeometryModel3D), new PropertyMetadata(true, (d, e) =>
             {
-                ((d as Element3DCore).SceneNode as BatchedMeshNode).IsScissorEnabled = (bool)e.NewValue;
+                ((d as Element3DCore).SceneNode as BatchedMeshNode).RasterComp.IsScissorEnabled = (bool)e.NewValue;
             }));
         /// <summary>
         /// The enable view frustum check property
@@ -118,7 +118,7 @@ namespace HelixToolkit.Wpf.SharpDX
             DependencyProperty.Register("EnableViewFrustumCheck", typeof(bool), typeof(BatchedMeshGeometryModel3D), new PropertyMetadata(true,
                 (d, e) =>
                 {
-                    ((d as Element3DCore).SceneNode as BatchedMeshNode).EnableViewFrustumCheck = (bool)e.NewValue;
+                    ((d as Element3DCore).SceneNode as BatchedMeshNode).BatchedGeometryComp.EnableFrustumCheck = (bool)e.NewValue;
                 }));
         /// <summary>
         /// The is depth clip enabled property
@@ -126,7 +126,7 @@ namespace HelixToolkit.Wpf.SharpDX
         public static readonly DependencyProperty IsDepthClipEnabledProperty = DependencyProperty.Register("IsDepthClipEnabled", typeof(bool), typeof(BatchedMeshGeometryModel3D),
             new PropertyMetadata(true, (d, e) =>
             {
-                ((d as Element3DCore).SceneNode as BatchedMeshNode).IsDepthClipEnabled = (bool)e.NewValue;
+                ((d as Element3DCore).SceneNode as BatchedMeshNode).RasterComp.IsDepthClipEnabled = (bool)e.NewValue;
             }));
 
 
@@ -134,7 +134,7 @@ namespace HelixToolkit.Wpf.SharpDX
         public static readonly DependencyProperty PostEffectsProperty =
             DependencyProperty.Register("PostEffects", typeof(string), typeof(BatchedMeshGeometryModel3D), new PropertyMetadata("", (d, e) =>
             {
-                ((d as Element3DCore).SceneNode as BatchedMeshNode).PostEffects = e.NewValue as string;
+                ((d as Element3DCore).SceneNode as BatchedMeshNode).PostEffectComp.PostEffects = e.NewValue as string;
             }));
         /// <summary>
         /// 
@@ -142,7 +142,7 @@ namespace HelixToolkit.Wpf.SharpDX
         public static readonly DependencyProperty MaterialProperty =
             DependencyProperty.Register("Material", typeof(Material), typeof(BatchedMeshGeometryModel3D), new PropertyMetadata(null, (d, e) =>
             {
-                ((d as Element3DCore).SceneNode as BatchedMeshNode).Material = e.NewValue as Material;
+                ((d as Element3DCore).SceneNode as BatchedMeshNode).MaterialComp.Material = e.NewValue as Material;
             }));
 
         /// <summary>
@@ -152,38 +152,38 @@ namespace HelixToolkit.Wpf.SharpDX
         public static readonly DependencyProperty IsTransparentProperty =
             DependencyProperty.Register("IsTransparent", typeof(bool), typeof(BatchedMeshGeometryModel3D), new PropertyMetadata(false, (d, e) =>
             {
-                ((d as Element3DCore).SceneNode as BatchedMeshNode).IsTransparent = (bool)e.NewValue;
+                ((d as Element3DCore).SceneNode as BatchedMeshNode).IsTransparentComp.IsTransparent = (bool)e.NewValue;
             }));
 
         /// <summary>
         /// The front counter clockwise property
         /// </summary>
         public static readonly DependencyProperty FrontCounterClockwiseProperty = DependencyProperty.Register("FrontCounterClockwise", typeof(bool), typeof(BatchedMeshGeometryModel3D),
-            new PropertyMetadata(true, (d, e) => { ((d as Element3DCore).SceneNode as BatchedMeshNode).FrontCCW = (bool)e.NewValue; }));
+            new PropertyMetadata(true, (d, e) => { ((d as Element3DCore).SceneNode as BatchedMeshNode).RasterComp.FrontCCW = (bool)e.NewValue; }));
         /// <summary>
         /// The cull mode property
         /// </summary>
         public static readonly DependencyProperty CullModeProperty = DependencyProperty.Register("CullMode", typeof(CullMode), typeof(BatchedMeshGeometryModel3D),
-            new PropertyMetadata(CullMode.None, (d, e) => { ((d as Element3DCore).SceneNode as BatchedMeshNode).CullMode = (CullMode)e.NewValue; }));
+            new PropertyMetadata(CullMode.None, (d, e) => { ((d as Element3DCore).SceneNode as BatchedMeshNode).RasterComp.CullMode = (CullMode)e.NewValue; }));
         /// <summary>
         /// The invert normal property
         /// </summary>
         public static readonly DependencyProperty InvertNormalProperty = DependencyProperty.Register("InvertNormal", typeof(bool), typeof(BatchedMeshGeometryModel3D),
-            new PropertyMetadata(false, (d, e) => { ((d as Element3DCore).SceneNode as BatchedMeshNode).InvertNormal = (bool)e.NewValue; }));
+            new PropertyMetadata(false, (d, e) => { ((d as Element3DCore).SceneNode as BatchedMeshNode).InvertNormalComp.InvertNormal = (bool)e.NewValue; }));
 
         /// <summary>
         /// The render wireframe property
         /// </summary>
         public static readonly DependencyProperty RenderWireframeProperty =
             DependencyProperty.Register("RenderWireframe", typeof(bool), typeof(BatchedMeshGeometryModel3D), new PropertyMetadata(false, (d, e) =>
-            { ((d as Element3DCore).SceneNode as BatchedMeshNode).RenderWireframe = (bool)e.NewValue; }));
+            { ((d as Element3DCore).SceneNode as BatchedMeshNode).WireframeComp.RenderWireframe = (bool)e.NewValue; }));
 
         /// <summary>
         /// The wireframe color property
         /// </summary>
         public static readonly DependencyProperty WireframeColorProperty =
             DependencyProperty.Register("WireframeColor", typeof(Color), typeof(BatchedMeshGeometryModel3D), new PropertyMetadata(Colors.SkyBlue, (d, e) =>
-            { ((d as Element3DCore).SceneNode as BatchedMeshNode).WireframeColor = ((Color)e.NewValue).ToColor4(); }));
+            { ((d as Element3DCore).SceneNode as BatchedMeshNode).WireframeComp.WireframeColor = ((Color)e.NewValue).ToColor4(); }));
 
         public string PostEffects
         {
@@ -442,19 +442,19 @@ namespace HelixToolkit.Wpf.SharpDX
         {
             if (node is BatchedMeshNode n)
             {
-                n.DepthBias = this.DepthBias;
-                n.IsDepthClipEnabled = this.IsDepthClipEnabled;
-                n.SlopeScaledDepthBias = (float)this.SlopeScaledDepthBias;
-                n.IsMSAAEnabled = this.IsMultisampleEnabled;
-                n.FillMode = this.FillMode;
-                n.IsScissorEnabled = this.IsScissorEnabled;
-                n.EnableViewFrustumCheck = this.EnableViewFrustumCheck;
-                n.PostEffects = this.PostEffects;
-                n.Material = this.Material;
-                n.InvertNormal = this.InvertNormal;
-                n.WireframeColor = this.WireframeColor.ToColor4();
-                n.RenderWireframe = this.RenderWireframe;
-                n.CullMode = this.CullMode;
+                n.RasterComp.DepthBias = this.DepthBias;
+                n.RasterComp.IsDepthClipEnabled = this.IsDepthClipEnabled;
+                n.RasterComp.SlopeScaledDepthBias = (float)this.SlopeScaledDepthBias;
+                n.RasterComp.IsMSAAEnabled = this.IsMultisampleEnabled;
+                n.RasterComp.FillMode = this.FillMode;
+                n.RasterComp.IsScissorEnabled = this.IsScissorEnabled;
+                n.BatchedGeometryComp.EnableFrustumCheck = this.EnableViewFrustumCheck;
+                n.PostEffectComp.PostEffects = this.PostEffects;
+                n.MaterialComp.Material = this.Material;
+                n.InvertNormalComp.InvertNormal = this.InvertNormal;
+                n.WireframeComp.WireframeColor = this.WireframeColor.ToColor4();
+                n.WireframeComp.RenderWireframe = this.RenderWireframe;
+                n.RasterComp.CullMode = this.CullMode;
             }
             base.AssignDefaultValuesToSceneNode(node);
         }
