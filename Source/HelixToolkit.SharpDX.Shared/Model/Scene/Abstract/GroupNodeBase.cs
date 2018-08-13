@@ -87,6 +87,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             for (int i = 0; i < Items.Count; ++i)
             {
                 Items[i].Detach();
+                TransformComp.RemoveChild(Items[i].TransformComp);
             }
             Items.Clear();
             itemHashSet.Clear();
