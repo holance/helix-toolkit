@@ -2,6 +2,8 @@
 The MIT License (MIT)
 Copyright (c) 2018 Helix Toolkit contributors
 */
+using global::SharpDX.Direct3D11;
+using global::SharpDX;
 #if !NETFX_CORE
 namespace HelixToolkit.Wpf.SharpDX.Core
 #else
@@ -10,10 +12,9 @@ namespace HelixToolkit.UWP.Core
 {
     using Shaders;
     using Render;
-    using global::SharpDX.Direct3D11;
-    using global::SharpDX;
+    using Components;
     using Utilities;
-    public class MeshRenderCore : MaterialGeometryRenderCore, IMeshRenderParams, IDynamicReflectable
+    public class MeshRenderCore : RenderCoreBase<ModelStruct>, IMeshRenderParams, IDynamicReflectable
     {
         #region Variables
         /// <summary>
@@ -25,7 +26,11 @@ namespace HelixToolkit.UWP.Core
         protected RasterizerStateProxy RasterStateWireframe { get { return rasterStateWireframe; } }
         private RasterizerStateProxy rasterStateWireframe = null;
 
-        private int shadowMapSlot;
+        public MeshCommand MeshCommand;
+
+        public RasterStateComponent RasterStateComp { get; }
+        public RasterStateComponent InvertCullRasterStateComp { get; }
+        public RasterStateComponent WireframeRasterStateComp { get; }
         #endregion
 
         #region Properties
@@ -105,23 +110,31 @@ namespace HelixToolkit.UWP.Core
         } = false;
         #endregion
 
-        protected override bool CreateRasterState(RasterizerStateDescription description, bool force)
+        public MeshRenderCore() : base(RenderType.Opaque)
         {
-            if (base.CreateRasterState(description, force))
+            RasterStateComp = AddComponent(new RasterStateComponent());
+            InvertCullRasterStateComp = AddComponent(new RasterStateComponent());
+            WireframeRasterStateComp = AddComponent(new RasterStateComponent());
+            RasterStateComp.OnRasterStateChanged += (s, e) => 
             {
-                RemoveAndDispose(ref rasterStateWireframe);
-                var wireframeDesc = description;
+                var invCullDesc = RasterStateComp.RasterDescription;
+                if(invCullDesc.CullMode == CullMode.Back)
+                {
+                    invCullDesc.CullMode = CullMode.Front;
+                }
+                else if(invCullDesc.CullMode == CullMode.Front)
+                {
+                    invCullDesc.CullMode = CullMode.Back;
+                }
+                InvertCullRasterStateComp.RasterDescription = invCullDesc;
+
+                var wireframeDesc = RasterStateComp.RasterDescription;
                 wireframeDesc.FillMode = FillMode.Wireframe;
                 wireframeDesc.DepthBias = -100;
                 wireframeDesc.SlopeScaledDepthBias = -2f;
                 wireframeDesc.DepthBiasClamp = -0.00008f;
-                rasterStateWireframe = Collect(EffectTechnique.EffectsManager.StateManager.Register(wireframeDesc));
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+                WireframeRasterStateComp.RasterDescription = wireframeDesc;
+            };
         }
 
         protected override bool OnAttach(IRenderTechnique technique)
@@ -145,53 +158,48 @@ namespace HelixToolkit.UWP.Core
             base.OnDetach();
         }
 
-        protected override void OnDefaultPassChanged(ShaderPass pass)
-        {
-            base.OnDefaultPassChanged(pass);
-            shadowMapSlot = pass.PixelShader.ShaderResourceViewMapping.TryGetBindSlot(ShaderShadowMapTextureName);
-        }
-
         protected override void OnUpdatePerModelStruct(ref ModelStruct model, RenderContext context)
         {
-            base.OnUpdatePerModelStruct(ref model, context);
+            model.World = ModelMatrix;
             model.RenderOIT = context.IsOITPass ? 1 : 0;
             model.Batched = Batched ? 1 : 0;
         }
 
         protected override void OnRender(RenderContext context, DeviceContextProxy deviceContext)
         {
-            ShaderPass pass = MaterialVariables.GetPass(this, context);
-            if (pass.IsNULL)
-            { return; }
-            pass.BindShader(deviceContext);
-            pass.BindStates(deviceContext, DefaultStateBinding);
-            if (!BindMaterialTextures(deviceContext, pass))
-            {
-                return;
-            }
-            MaterialVariables.UpdateMaterialStruct(deviceContext, ref modelStruct);
-            if (context.RenderHost.IsShadowMapEnabled)
-            {
-                pass.PixelShader.BindTexture(deviceContext, shadowMapSlot, context.SharedResource.ShadowView);
-            }
-            DynamicReflector?.BindCubeMap(deviceContext);
-            DrawIndexed(deviceContext, GeometryBuffer.IndexBuffer, InstanceBuffer);
-            DynamicReflector?.UnBindCubeMap(deviceContext);
-            if (RenderWireframe && !WireframePass.IsNULL)
-            {
-                if (RenderType == RenderType.Transparent && context.IsOITPass)
-                {
-                    pass = WireframeOITPass;
-                }
-                else
-                {
-                    pass = WireframePass;
-                }
-                pass.BindShader(deviceContext, false);
-                pass.BindStates(deviceContext, DefaultStateBinding);
-                deviceContext.SetRasterState(RasterStateWireframe);
-                DrawIndexed(deviceContext, GeometryBuffer.IndexBuffer, InstanceBuffer);
-            }
+            MeshCommand.Render(context, deviceContext, ref modelStruct);
+            //ShaderPass pass = MaterialVariables.GetPass(RenderType, context);
+            //if (pass.IsNULL)
+            //{ return; }
+            //pass.BindShader(deviceContext);
+            //pass.BindStates(deviceContext, DefaultStateBinding);
+            //if (!BindMaterialTextures(deviceContext, pass))
+            //{
+            //    return;
+            //}
+            //MaterialVariables.UpdateMaterialStruct(deviceContext, ref modelStruct);
+            //if (context.RenderHost.IsShadowMapEnabled)
+            //{
+            //    pass.PixelShader.BindTexture(deviceContext, shadowMapSlot, context.SharedResource.ShadowView);
+            //}
+            //DynamicReflector?.BindCubeMap(deviceContext);
+            //DrawIndexed(deviceContext, GeometryBuffer.IndexBuffer, InstanceBuffer);
+            //DynamicReflector?.UnBindCubeMap(deviceContext);
+            //if (RenderWireframe && !WireframePass.IsNULL)
+            //{
+            //    if (RenderType == RenderType.Transparent && context.IsOITPass)
+            //    {
+            //        pass = WireframeOITPass;
+            //    }
+            //    else
+            //    {
+            //        pass = WireframePass;
+            //    }
+            //    pass.BindShader(deviceContext, false);
+            //    pass.BindStates(deviceContext, DefaultStateBinding);
+            //    deviceContext.SetRasterState(RasterStateWireframe);
+            //    DrawIndexed(deviceContext, GeometryBuffer.IndexBuffer, InstanceBuffer);
+            //}
         }
 
         protected override void OnRenderCustom(RenderContext context, DeviceContextProxy deviceContext, ShaderPass shaderPass)

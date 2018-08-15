@@ -43,13 +43,16 @@ namespace HelixToolkit.UWP.Render
         private readonly ConcurrentBag<DeviceContextProxy> contextPool = new ConcurrentBag<DeviceContextProxy>();
 
         private readonly Device device;
+        private readonly IDeviceResources resources;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DeviceContextPool"/> class.
         /// </summary>
-        /// <param name="device">The device.</param>
-        public DeviceContextPool(Device device)
+        /// <param name="resources">The resources.</param>
+        public DeviceContextPool(IDeviceResources resources)
         {
-            this.device = device;
+            this.device = resources.Device;
+            this.resources = resources;
         }
         /// <summary>
         /// Gets this instance from pool
@@ -66,7 +69,7 @@ namespace HelixToolkit.UWP.Render
             {
                 lock (this)
                 {
-                    return Collect(new DeviceContextProxy(device));
+                    return Collect(new DeviceContextProxy(device, resources));
                 }
             }
         }

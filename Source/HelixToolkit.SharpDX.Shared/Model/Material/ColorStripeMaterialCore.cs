@@ -248,11 +248,11 @@ namespace HelixToolkit.UWP.Model
             cbStream.Write(materialStruct);
         }
 
-        protected override bool OnBindMaterialTextures(DeviceContextProxy context, ShaderPass shaderPass)
+        protected override bool OnBindMaterialTextures(RenderContext context, DeviceContextProxy deviceContext, ShaderPass shaderPass)
         {
             if (textureIndex != 0)
             {
-                OnBindMaterialTextures(context, shaderPass.PixelShader);
+                OnBindMaterialTextures(deviceContext, shaderPass.PixelShader);
             }
             return true;
         }
@@ -302,7 +302,7 @@ namespace HelixToolkit.UWP.Model
             base.OnDispose(disposeManagedResources);
         }
 
-        public override ShaderPass GetPass(MaterialGeometryRenderCore core, RenderContext context)
+        public override ShaderPass GetPass(RenderType renderType, RenderContext context)
         {
             return MaterialPass;
         }

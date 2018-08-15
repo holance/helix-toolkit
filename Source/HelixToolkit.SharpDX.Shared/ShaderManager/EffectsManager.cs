@@ -312,7 +312,7 @@ namespace HelixToolkit.UWP
             materialVariableManager = Collect(new MaterialVariablePool(this));
 
             RemoveAndDispose(ref deviceContextPool);
-            deviceContextPool = Collect(new DeviceContextPool(Device));
+            deviceContextPool = Collect(new DeviceContextPool(this));
 #endregion
             Log(LogLevel.Information, "Initializing Direct2D resources");
             factory2D = Collect(new global::SharpDX.Direct2D1.Factory1(global::SharpDX.Direct2D1.FactoryType.MultiThreaded));

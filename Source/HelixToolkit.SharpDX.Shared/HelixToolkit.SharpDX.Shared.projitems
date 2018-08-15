@@ -41,6 +41,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Buffers\LineBufferModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Buffers\MeshBufferModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Buffers\PointBufferModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Commands\MeshCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Components\CoreComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Components\RasterStateComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\CrossSectionMeshRenderCore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DepthPrepassCore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\DynamicCubeMapCore.cs" />

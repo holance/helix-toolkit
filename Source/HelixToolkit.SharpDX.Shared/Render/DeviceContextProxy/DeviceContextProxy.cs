@@ -32,6 +32,7 @@ namespace HelixToolkit.Wpf.SharpDX.Render
         private Color4? currBlendFactor = null;
         private uint currSampleMask = uint.MaxValue;
         public readonly bool IsDeferred = false;
+        public IDeviceResources DeviceResources { get; }
 
         #region Properties
 
@@ -57,11 +58,13 @@ namespace HelixToolkit.Wpf.SharpDX.Render
         /// Initializes a new deferred context
         /// </summary>
         /// <param name="device">The device.</param>
-        public DeviceContextProxy(Device device)
+        /// <param name="deviceResources"></param>
+        public DeviceContextProxy(Device device, IDeviceResources deviceResources)
         {
             deviceContext = Collect(new DeviceContext(device));
             this.device = device;
             IsDeferred = true;
+            this.DeviceResources = deviceResources;
         }
 
         /// <summary>
@@ -69,11 +72,13 @@ namespace HelixToolkit.Wpf.SharpDX.Render
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="device">device</param>
-        public DeviceContextProxy(DeviceContext context, Device device)
+        /// <param name="deviceResources"></param>
+        public DeviceContextProxy(DeviceContext context, Device device, IDeviceResources deviceResources)
         {
             deviceContext = context;
             this.device = device;
             IsDeferred = false;
+            this.DeviceResources = deviceResources;
         }
         #endregion Constructor
 

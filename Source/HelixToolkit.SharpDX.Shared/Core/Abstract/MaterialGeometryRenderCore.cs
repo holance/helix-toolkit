@@ -67,15 +67,5 @@ namespace HelixToolkit.UWP.Core
         {
             //Use material to update constant buffer.
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="shader"></param>
-        /// <returns></returns>
-        public bool BindMaterialTextures(DeviceContextProxy context, ShaderPass shader)
-        {
-            return MaterialVariables.BindMaterial(context, shader);
-        }
     }
 }
