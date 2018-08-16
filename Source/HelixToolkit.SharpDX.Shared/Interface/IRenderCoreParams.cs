@@ -15,32 +15,35 @@ namespace HelixToolkit.UWP.Core
 {
     using Model;
     using Render;
+    using Core.Components;
     /// <summary>
     /// 
     /// </summary>
     public interface IGeometryRenderCore
     {
-        /// <summary>
-        /// Gets or sets the instance buffer.
-        /// </summary>
-        /// <value>
-        /// The instance buffer.
-        /// </value>
-        IElementsBufferModel InstanceBuffer { set; get; }
-        /// <summary>
-        /// Gets or sets the geometry buffer.
-        /// </summary>
-        /// <value>
-        /// The geometry buffer.
-        /// </value>
-        IAttachableBufferModel GeometryBuffer { set; get; }
-        /// <summary>
-        /// Gets or sets the raster description.
-        /// </summary>
-        /// <value>
-        /// The raster description.
-        /// </value>
-        RasterizerStateDescription RasterDescription { set; get; }
+        ///// <summary>
+        ///// Gets or sets the instance buffer.
+        ///// </summary>
+        ///// <value>
+        ///// The instance buffer.
+        ///// </value>
+        //IElementsBufferModel InstanceBuffer { set; get; }
+        ///// <summary>
+        ///// Gets or sets the geometry buffer.
+        ///// </summary>
+        ///// <value>
+        ///// The geometry buffer.
+        ///// </value>
+        //IAttachableBufferModel GeometryBuffer { set; get; }
+        ///// <summary>
+        ///// Gets or sets the raster description.
+        ///// </summary>
+        ///// <value>
+        ///// The raster description.
+        ///// </value>
+        //RasterizerStateDescription RasterDescription { set; get; }
+        GeometryComponent GeometryComp { get; }
+        RasterStateComponent RasterStateComp { get; }
     }
 
     /// <summary>
@@ -48,13 +51,14 @@ namespace HelixToolkit.UWP.Core
     /// </summary>
     public interface IMaterialRenderParams
     {
-        /// <summary>
-        /// Gets or sets the material variables used for rendering.
-        /// </summary>
-        /// <value>
-        /// The material variable.
-        /// </value>
-        MaterialVariable MaterialVariables { set; get; }
+        ///// <summary>
+        ///// Gets or sets the material variables used for rendering.
+        ///// </summary>
+        ///// <value>
+        ///// The material variable.
+        ///// </value>
+        //MaterialVariable MaterialVariables { set; get; }
+        MaterialComponent MaterialComp { get; }
     }
 
     /// <summary>

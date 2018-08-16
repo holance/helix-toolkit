@@ -79,36 +79,36 @@ namespace HelixToolkit.UWP.Core
             matricsChanged = true;
         }
 
-        protected override void OnGeometryBufferChanged(IAttachableBufferModel buffer)
-        {
-            base.OnGeometryBufferChanged(buffer);
-            preComputeBoneBuffer = buffer as IBoneSkinPreComputehBufferModel;
-        }
+        //protected override void OnGeometryBufferChanged(IAttachableBufferModel buffer)
+        //{
+        //    base.OnGeometryBufferChanged(buffer);
+        //    preComputeBoneBuffer = buffer as IBoneSkinPreComputehBufferModel;
+        //}
 
-        protected override void OnUpdate(RenderContext context, DeviceContextProxy deviceContext)
-        {
-            if (preComputeBoneSkinPass.IsNULL || preComputeBoneBuffer == null || !preComputeBoneBuffer.CanPreCompute || !matricsChanged)
-            {
-                return;
-            }
-            var buffer = sharedBoneBuffer ?? internalBoneBuffer;
+        //protected override void OnUpdate(RenderContext context, DeviceContextProxy deviceContext)
+        //{
+        //    if (preComputeBoneSkinPass.IsNULL || preComputeBoneBuffer == null || !preComputeBoneBuffer.CanPreCompute || !matricsChanged)
+        //    {
+        //        return;
+        //    }
+        //    var buffer = sharedBoneBuffer ?? internalBoneBuffer;
 
-            if(buffer.BoneMatrices.Length == 0)
-            {
-                preComputeBoneBuffer.ResetSkinnedVertexBuffer(deviceContext);
-            }
-            else
-            {
-                GeometryBuffer.UpdateBuffers(deviceContext, EffectTechnique.EffectsManager);
-                preComputeBoneBuffer.BindSkinnedVertexBufferToOutput(deviceContext);
-                buffer.Update(context, deviceContext);
-                preComputeBoneSkinPass.BindShader(deviceContext);
-                buffer.BindBuffer(deviceContext, boneSkinSBSlot);
-                deviceContext.Draw(GeometryBuffer.VertexBuffer[0].ElementCount, 0);
-                preComputeBoneBuffer.UnBindSkinnedVertexBufferToOutput(deviceContext);
-            }
-            matricsChanged = false;         
-        }
+        //    if(buffer.BoneMatrices.Length == 0)
+        //    {
+        //        preComputeBoneBuffer.ResetSkinnedVertexBuffer(deviceContext);
+        //    }
+        //    else
+        //    {
+        //        GeometryBuffer.UpdateBuffers(deviceContext, EffectTechnique.EffectsManager);
+        //        preComputeBoneBuffer.BindSkinnedVertexBufferToOutput(deviceContext);
+        //        buffer.Update(context, deviceContext);
+        //        preComputeBoneSkinPass.BindShader(deviceContext);
+        //        buffer.BindBuffer(deviceContext, boneSkinSBSlot);
+        //        deviceContext.Draw(GeometryBuffer.VertexBuffer[0].ElementCount, 0);
+        //        preComputeBoneBuffer.UnBindSkinnedVertexBufferToOutput(deviceContext);
+        //    }
+        //    matricsChanged = false;         
+        //}
 
         protected override void OnDetach()
         {

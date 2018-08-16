@@ -348,7 +348,7 @@ namespace HelixToolkit.Wpf.SharpDX.Render
                     {
                         if (core is IGeometryRenderCore c)
                         {
-                            if (c.GeometryBuffer is IGeometryBufferModel geo && geo.Geometry != null && geo.Geometry.Indices != null)
+                            if (c.GeometryComp.GeometryBuffer is IGeometryBufferModel geo && geo.Geometry != null && geo.Geometry.Indices != null)
                                 count += geo.Geometry.Indices.Count / 3;
                         }
                     }
@@ -356,7 +356,7 @@ namespace HelixToolkit.Wpf.SharpDX.Render
                     {
                         if (core is IGeometryRenderCore c)
                         {
-                            if (c.GeometryBuffer is IGeometryBufferModel geo && geo.Geometry != null && geo.Geometry.Indices != null)
+                            if (c.GeometryComp.GeometryBuffer is IGeometryBufferModel geo && geo.Geometry != null && geo.Geometry.Indices != null)
                                 count += geo.Geometry.Indices.Count / 3;
                         }
                     }

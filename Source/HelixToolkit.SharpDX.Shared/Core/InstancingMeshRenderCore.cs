@@ -21,14 +21,14 @@ namespace HelixToolkit.UWP.Core
                 var old = parameterBufferModel;
                 if(SetAffectsCanRenderFlag(ref parameterBufferModel, value))
                 {
-                    if (old != null)
-                    {
-                        old.OnElementChanged -= OnElementChanged;
-                    }
-                    if (parameterBufferModel != null)
-                    {
-                        parameterBufferModel.OnElementChanged += OnElementChanged;
-                    }
+                    //if (old != null)
+                    //{
+                    //    old.OnElementChanged -= OnElementChanged;
+                    //}
+                    //if (parameterBufferModel != null)
+                    //{
+                    //    parameterBufferModel.OnElementChanged += OnElementChanged;
+                    //}
                 }
             }
             get { return parameterBufferModel; }
@@ -38,10 +38,10 @@ namespace HelixToolkit.UWP.Core
         {
             return base.OnAttach(technique);
         }
-        protected override bool OnUpdateCanRenderFlag()
-        {
-            return base.OnUpdateCanRenderFlag() && InstanceBuffer != null && InstanceBuffer.HasElements;
-        }
+        //protected override bool OnUpdateCanRenderFlag()
+        //{
+        //    return base.OnUpdateCanRenderFlag() && InstanceBuffer != null && InstanceBuffer.HasElements;
+        //}
 
         protected override void OnUpdatePerModelStruct(ref ModelStruct model, RenderContext context)
         {

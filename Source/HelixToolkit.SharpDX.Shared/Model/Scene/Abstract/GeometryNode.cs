@@ -415,7 +415,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         {
             if (IsAttached && RenderCore is IGeometryRenderCore r)
             {
-                r.RasterDescription = OnCreateRasterState != null ? OnCreateRasterState() : CreateRasterState();
+                r.RasterStateComp.RasterDescription = OnCreateRasterState != null ? OnCreateRasterState() : CreateRasterState();
             }
         }
 
@@ -452,7 +452,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
                 InstanceBuffer.Elements = this.Instances;
                 if (RenderCore is IGeometryRenderCore r)
                 {
-                    r.InstanceBuffer = InstanceBuffer;
+                    r.GeometryComp.InstanceBuffer = InstanceBuffer;
                 }
                 return true;
             }
@@ -468,7 +468,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             bufferModelInternal = Collect(OnCreateBufferModel(this.GUID, geometry));
             if(RenderCore is IGeometryRenderCore core)
             {
-                core.GeometryBuffer = bufferModelInternal;
+                core.GeometryComp.GeometryBuffer = bufferModelInternal;
             }
         }
         /// <summary>

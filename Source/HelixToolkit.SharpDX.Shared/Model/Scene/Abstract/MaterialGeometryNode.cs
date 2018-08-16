@@ -66,7 +66,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             RemoveAndDispose(ref materialVariable);
             if(material != null && RenderCore is IMaterialRenderParams core)
             {
-                materialVariable = core.MaterialVariables = Collect(EffectsManager.MaterialVariableManager.Register(material, EffectTechnique));
+                materialVariable = core.MaterialComp.MaterialVariables = Collect(EffectsManager.MaterialVariableManager.Register(material, EffectTechnique));
             }
         }
 
@@ -93,7 +93,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             materialVariable = null;
             if (RenderCore is IMaterialRenderParams core)
             {
-                core.MaterialVariables = null;
+                core.MaterialComp.MaterialVariables = null;
             }
             base.OnDetach();
         }

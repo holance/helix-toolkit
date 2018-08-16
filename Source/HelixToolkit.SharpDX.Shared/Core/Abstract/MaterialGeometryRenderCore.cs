@@ -17,7 +17,7 @@ namespace HelixToolkit.UWP.Core
     /// <summary>
     /// 
     /// </summary>
-    public abstract class MaterialGeometryRenderCore : GeometryRenderCore<ModelStruct>, IMaterialRenderParams
+    public abstract class MaterialGeometryRenderCore : GeometryRenderCore<ModelStruct>
     {
         private MaterialVariable materialVariables = EmptyMaterialVariable.EmptyVariable;
         /// <summary>

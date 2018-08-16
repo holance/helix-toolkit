@@ -20,7 +20,7 @@ namespace HelixToolkit.UWP.Core
     /// 
     /// </summary>
     /// <typeparam name="MODELSTRUCT"></typeparam>
-    public abstract class GeometryRenderCore<MODELSTRUCT> : RenderCoreBase<MODELSTRUCT>, IGeometryRenderCore where MODELSTRUCT : struct
+    public abstract class GeometryRenderCore<MODELSTRUCT> : RenderCoreBase<MODELSTRUCT> where MODELSTRUCT : struct
     {
         private RasterizerStateProxy rasterState = null;
         /// <summary>

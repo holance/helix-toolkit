@@ -13,24 +13,15 @@ namespace HelixToolkit.UWP.Core
     using Shaders;
     using Render;
     using Components;
-    using Utilities;
-    public class MeshRenderCore : RenderCoreBase<ModelStruct>, IMeshRenderParams, IDynamicReflectable
+    public class MeshRenderCore : RenderCoreBase<ModelStruct>, IMeshRenderParams, IDynamicReflectable, IGeometryRenderCore, IMaterialRenderParams
     {
         #region Variables
-        /// <summary>
-        /// Gets the raster state wireframe.
-        /// </summary>
-        /// <value>
-        /// The raster state wireframe.
-        /// </value>
-        protected RasterizerStateProxy RasterStateWireframe { get { return rasterStateWireframe; } }
-        private RasterizerStateProxy rasterStateWireframe = null;
-
         public MeshCommand MeshCommand;
-
         public RasterStateComponent RasterStateComp { get; }
         public RasterStateComponent InvertCullRasterStateComp { get; }
         public RasterStateComponent WireframeRasterStateComp { get; }
+        public GeometryComponent GeometryComp { get; }
+        public MaterialComponent MaterialComp { get; }
         #endregion
 
         #region Properties
@@ -96,7 +87,11 @@ namespace HelixToolkit.UWP.Core
         /// </value>
         public IDynamicReflector DynamicReflector
         {
-            set; get;
+            set
+            {
+                MeshCommand.DynamicReflector = value;
+            }
+            get { return MeshCommand.DynamicReflector; }
         }
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="MeshRenderCore"/> is batched.
@@ -106,15 +101,35 @@ namespace HelixToolkit.UWP.Core
         /// </value>
         public bool Batched
         {
-            set; get;
-        } = false;
+            set { modelStruct.Batched = value ? 1 : 0; }
+            get { return modelStruct.Batched == 1 ? true : false; }
+        }
         #endregion
 
         public MeshRenderCore() : base(RenderType.Opaque)
         {
+            GeometryComp = AddComponent(new GeometryComponent());
             RasterStateComp = AddComponent(new RasterStateComponent());
             InvertCullRasterStateComp = AddComponent(new RasterStateComponent());
             WireframeRasterStateComp = AddComponent(new RasterStateComponent());
+            MaterialComp = AddComponent(new MaterialComponent());
+        }
+
+        private void SetupComponents()
+        {
+            GeometryComp.OnGeometryBufferChanged += (s, e) =>
+            {
+                UpdateCommand();
+            };
+            GeometryComp.OnInstanceBufferChanged += (s, e) =>
+            {
+                UpdateCommand();
+            };
+            GeometryComp.OnInstanceElementChanged += (s, e) =>
+            {
+                modelStruct.HasInstances = GeometryComp.InstanceBuffer.HasElements ? 1 : 0;
+                InvalidateRenderer();
+            };
             RasterStateComp.OnRasterStateChanged += (s, e) => 
             {
                 var invCullDesc = RasterStateComp.RasterDescription;
@@ -134,7 +149,9 @@ namespace HelixToolkit.UWP.Core
                 wireframeDesc.SlopeScaledDepthBias = -2f;
                 wireframeDesc.DepthBiasClamp = -0.00008f;
                 WireframeRasterStateComp.RasterDescription = wireframeDesc;
+                UpdateCommand();
             };
+            MaterialComp.OnMaterialChanged += (s, e) => { UpdateCommand(); };
         }
 
         protected override bool OnAttach(IRenderTechnique technique)
@@ -154,7 +171,6 @@ namespace HelixToolkit.UWP.Core
         protected override void OnDetach()
         {
             DynamicReflector = null;
-            rasterStateWireframe = null;
             base.OnDetach();
         }
 
@@ -162,7 +178,18 @@ namespace HelixToolkit.UWP.Core
         {
             model.World = ModelMatrix;
             model.RenderOIT = context.IsOITPass ? 1 : 0;
-            model.Batched = Batched ? 1 : 0;
+        }
+
+        protected virtual void UpdateCommand()
+        {
+            MeshCommand = new MeshCommand()
+            {
+                MeshBuffer = GeometryComp.GeometryBuffer,
+                InstanceBuffer = GeometryComp.InstanceBuffer,
+                RasterState = RasterStateComp.RasterState,
+                DynamicReflector = DynamicReflector,
+                MaterialVariables = MaterialComp.MaterialVariables,
+            };
         }
 
         protected override void OnRender(RenderContext context, DeviceContextProxy deviceContext)
@@ -202,20 +229,35 @@ namespace HelixToolkit.UWP.Core
             //}
         }
 
-        protected override void OnRenderCustom(RenderContext context, DeviceContextProxy deviceContext, ShaderPass shaderPass)
+        protected override ConstantBufferDescription GetModelConstantBufferDescription()
         {
-            MaterialVariables.UpdateMaterialStruct(deviceContext, ref modelStruct);
-            DrawIndexed(deviceContext, GeometryBuffer.IndexBuffer, InstanceBuffer);
+            return null;
         }
 
-        protected override void OnRenderShadow(RenderContext context, DeviceContextProxy deviceContext)
+        public override void RenderShadow(RenderContext context, DeviceContextProxy deviceContext)
         {
-            if (!IsThrowingShadow || ShadowPass.IsNULL)
-            { return; }
-            MaterialVariables.UpdateModelStructOnly(deviceContext, ref modelStruct);
-            ShadowPass.BindShader(deviceContext);
-            ShadowPass.BindStates(deviceContext, ShadowStateBinding);
-            DrawIndexed(deviceContext, GeometryBuffer.IndexBuffer, InstanceBuffer);
+
         }
+
+        public override void RenderCustom(RenderContext context, DeviceContextProxy deviceContext)
+        {
+
+        }
+
+        //protected override void OnRenderCustom(RenderContext context, DeviceContextProxy deviceContext, ShaderPass shaderPass)
+        //{
+        //    MaterialVariables.UpdateMaterialStruct(deviceContext, ref modelStruct);
+        //    DrawIndexed(deviceContext, GeometryBuffer.IndexBuffer, InstanceBuffer);
+        //}
+
+        //protected override void OnRenderShadow(RenderContext context, DeviceContextProxy deviceContext)
+        //{
+        //    if (!IsThrowingShadow || ShadowPass.IsNULL)
+        //    { return; }
+        //    MaterialVariables.UpdateModelStructOnly(deviceContext, ref modelStruct);
+        //    ShadowPass.BindShader(deviceContext);
+        //    ShadowPass.BindStates(deviceContext, ShadowStateBinding);
+        //    DrawIndexed(deviceContext, GeometryBuffer.IndexBuffer, InstanceBuffer);
+        //}
     }
 }

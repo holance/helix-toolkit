@@ -222,29 +222,29 @@ namespace HelixToolkit.UWP.Core
             return new ConstantBufferDescription(DefaultBufferNames.ClipParamsCB, ClipPlaneStruct.SizeInBytes);
         }
 
-        protected override bool CreateRasterState(RasterizerStateDescription description, bool force)
-        {
-            if(!base.CreateRasterState(description, force))
-            {
-                return false;
-            }
-            #region Create states
-            RemoveAndDispose(ref backfaceRasterState);
-            this.backfaceRasterState = Collect(EffectTechnique.EffectsManager.StateManager.Register(new RasterizerStateDescription()
-            {
-                FillMode = FillMode.Solid,
-                CullMode = CullMode.Front,
-                DepthBias = description.DepthBias,
-                DepthBiasClamp = description.DepthBiasClamp,
-                SlopeScaledDepthBias = description.SlopeScaledDepthBias,
-                IsDepthClipEnabled = description.IsDepthClipEnabled,
-                IsFrontCounterClockwise = description.IsFrontCounterClockwise,
-                IsMultisampleEnabled = false,
-                IsScissorEnabled = false
-            }));
-            #endregion
-            return true;
-        }
+        //protected override bool CreateRasterState(RasterizerStateDescription description, bool force)
+        //{
+        //    if(!base.CreateRasterState(description, force))
+        //    {
+        //        return false;
+        //    }
+        //    #region Create states
+        //    RemoveAndDispose(ref backfaceRasterState);
+        //    this.backfaceRasterState = Collect(EffectTechnique.EffectsManager.StateManager.Register(new RasterizerStateDescription()
+        //    {
+        //        FillMode = FillMode.Solid,
+        //        CullMode = CullMode.Front,
+        //        DepthBias = description.DepthBias,
+        //        DepthBiasClamp = description.DepthBiasClamp,
+        //        SlopeScaledDepthBias = description.SlopeScaledDepthBias,
+        //        IsDepthClipEnabled = description.IsDepthClipEnabled,
+        //        IsFrontCounterClockwise = description.IsFrontCounterClockwise,
+        //        IsMultisampleEnabled = false,
+        //        IsScissorEnabled = false
+        //    }));
+        //    #endregion
+        //    return true;
+        //}
 
         protected override void OnUploadPerModelConstantBuffers(DeviceContextProxy context)
         {
@@ -254,22 +254,22 @@ namespace HelixToolkit.UWP.Core
 
         protected override void OnRender(RenderContext renderContext, DeviceContextProxy deviceContext)
         {
-            base.OnRender(renderContext, deviceContext);
-            // Draw backface into stencil buffer
-            var dsView = renderContext.RenderHost.DepthStencilBufferView;
-            deviceContext.ClearDepthStencilView(dsView, DepthStencilClearFlags.Stencil, 0, 0);
-            deviceContext.SetDepthStencilOnly(dsView);//Remove render target
-            deviceContext.SetRasterState(backfaceRasterState);
-            drawBackfacePass.BindShader(deviceContext);
-            drawBackfacePass.BindStates(deviceContext, StateType.BlendState | StateType.DepthStencilState);
-            DrawIndexed(deviceContext, GeometryBuffer.IndexBuffer, InstanceBuffer);
+            //base.OnRender(renderContext, deviceContext);
+            //// Draw backface into stencil buffer
+            //var dsView = renderContext.RenderHost.DepthStencilBufferView;
+            //deviceContext.ClearDepthStencilView(dsView, DepthStencilClearFlags.Stencil, 0, 0);
+            //deviceContext.SetDepthStencilOnly(dsView);//Remove render target
+            //deviceContext.SetRasterState(backfaceRasterState);
+            //drawBackfacePass.BindShader(deviceContext);
+            //drawBackfacePass.BindStates(deviceContext, StateType.BlendState | StateType.DepthStencilState);
+            //DrawIndexed(deviceContext, GeometryBuffer.IndexBuffer, InstanceBuffer);
 
-            //Draw full screen quad to fill cross section            
-            deviceContext.SetRasterState(RasterState);
-            drawScreenQuadPass.BindShader(deviceContext);
-            drawScreenQuadPass.BindStates(deviceContext, StateType.BlendState | StateType.DepthStencilState);
-            renderContext.RenderHost.SetDefaultRenderTargets(false);//Rebind render target
-            deviceContext.Draw(4, 0);
+            ////Draw full screen quad to fill cross section            
+            //deviceContext.SetRasterState(RasterState);
+            //drawScreenQuadPass.BindShader(deviceContext);
+            //drawScreenQuadPass.BindStates(deviceContext, StateType.BlendState | StateType.DepthStencilState);
+            //renderContext.RenderHost.SetDefaultRenderTargets(false);//Rebind render target
+            //deviceContext.Draw(4, 0);
         }
     }
 }
