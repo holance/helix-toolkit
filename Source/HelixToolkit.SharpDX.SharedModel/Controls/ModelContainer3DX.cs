@@ -25,6 +25,7 @@ namespace HelixToolkit.Wpf.SharpDX
     using Model.Scene;
     using Render;
     using Utilities;
+    using Controls;
 
 
     /// <summary>

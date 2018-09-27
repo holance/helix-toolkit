@@ -1,4 +1,6 @@
-﻿using SharpDX;
+﻿using HelixToolkit.Mathematics;
+using System.Numerics;
+using Matrix = System.Numerics.Matrix4x4;
 using SharpDX.Direct3D11;
 using System.IO;
 using System.Runtime.Serialization;

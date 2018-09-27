@@ -4,13 +4,14 @@ Copyright (c) 2018 Helix Toolkit contributors
 */
 using System.Runtime.CompilerServices;
 using global::SharpDX.Direct3D11;
+using HelixToolkit.Mathematics;
+using System.Numerics;
 #if !NETFX_CORE
 namespace HelixToolkit.Wpf.SharpDX.Model
 #else
 namespace HelixToolkit.UWP.Model
 #endif
 {
-    using global::SharpDX;
     using Render;
     using ShaderManager;
     using Shaders;
@@ -97,8 +98,8 @@ namespace HelixToolkit.UWP.Model
             AddPropertyBinding(nameof(PBRMaterialCore.MinDistanceTessellationFactor), () => { WriteValue(PhongPBRMaterialStruct.MinDistTessFactorStr, material.MinDistanceTessellationFactor); });
             AddPropertyBinding(nameof(PBRMaterialCore.UVTransform), () => 
             {
-                WriteValue(PhongPBRMaterialStruct.UVTransformR1Str, material.UVTransform.Column1);
-                WriteValue(PhongPBRMaterialStruct.UVTransformR2Str, material.UVTransform.Column2);
+                WriteValue(PhongPBRMaterialStruct.UVTransformR1Str, material.UVTransform.GetColumn(0));
+                WriteValue(PhongPBRMaterialStruct.UVTransformR2Str, material.UVTransform.GetColumn(1));
             });
             AddPropertyBinding(nameof(PBRMaterialCore.AlbedoMap), () => { CreateTextureView(material.AlbedoMap, AlbedoMapIdx); TriggerPropertyAction(nameof(PBRMaterialCore.RenderAlbedoMap)); });
             AddPropertyBinding(nameof(PBRMaterialCore.EmissiveMap), () => { CreateTextureView(material.EmissiveMap, EmissiveMapIdx); TriggerPropertyAction(nameof(PBRMaterialCore.RenderEmissiveMap)); });

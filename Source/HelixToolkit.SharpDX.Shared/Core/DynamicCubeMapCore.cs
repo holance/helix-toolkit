@@ -6,7 +6,6 @@ Copyright (c) 2018 Helix Toolkit contributors
 //#define TEST
 using HelixToolkit.Mathematics;
 using System.Numerics;
-using Matrix = System.Numerics.Matrix4x4;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using System;
@@ -475,9 +474,9 @@ namespace HelixToolkit.UWP.Core
             for (int i = 0; i < 6; ++i)
             {
                 targets[i] = center + lookVector[i];
-                cubeFaceCameras.Cameras[i].View = (IsLeftHanded ? Matrix.LookAtLH(center, targets[i], upVectors[i]) : Matrix.LookAtRH(center, targets[i], upVectors[i])) * Matrix.Scaling(-1, 1, 1);
-                cubeFaceCameras.Cameras[i].Projection = IsLeftHanded ? Matrix.PerspectiveFovLH((float)Math.PI * 0.5f, 1, NearField, FarField)
-                : Matrix.PerspectiveFovRH((float)Math.PI * 0.5f, 1, NearField, FarField);
+                cubeFaceCameras.Cameras[i].View = (IsLeftHanded ? MatrixHelper.LookAtLH(center, targets[i], upVectors[i]) : MatrixHelper.LookAtRH(center, targets[i], upVectors[i])) * MatrixHelper.Scaling(-1, 1, 1);
+                cubeFaceCameras.Cameras[i].Projection = IsLeftHanded ? MatrixHelper.PerspectiveFovLH((float)Math.PI * 0.5f, 1, NearField, FarField)
+                : MatrixHelper.PerspectiveFovRH((float)Math.PI * 0.5f, 1, NearField, FarField);
             }
         }
 

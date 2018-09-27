@@ -519,7 +519,7 @@ namespace HelixToolkit.Wpf.SharpDX
             this Camera camera, Viewport3DX viewport, double animationTime = 0)
         {
             var bounds = viewport.FindBoundsInternal();
-            var diagonal = new Vector3D(bounds.SizeX, bounds.SizeY, bounds.SizeZ);
+            var diagonal = bounds.Maximum - bounds.Minimum;
 
             if (diagonal.LengthSquared().Equals(0))
             {

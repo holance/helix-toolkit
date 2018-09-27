@@ -144,8 +144,8 @@ namespace HelixToolkit.Wpf.SharpDX
             {
                 using (var brush = new LinearGradientBrush(target, new LinearGradientBrushProperties()
                 {
-                    StartPoint = startPoint,
-                    EndPoint = endPoint
+                    StartPoint = startPoint.ToRaw(),
+                    EndPoint = endPoint.ToRaw()
                 }, new GradientStopCollection(target, gradients, gamma, extendMode)))
                 {
                     target.FillRectangle(new RawRectangleF(0, 0, width, height), brush);
@@ -162,7 +162,7 @@ namespace HelixToolkit.Wpf.SharpDX
             {
                 using (var brush = new RadialGradientBrush(target, new RadialGradientBrushProperties()
                 {
-                    Center = center, GradientOriginOffset = gradientOriginOffset,
+                    Center = center.ToRaw(), GradientOriginOffset = gradientOriginOffset.ToRaw(),
                     RadiusX = radiusX, RadiusY = radiusY,
                 }, new GradientStopCollection(target, gradients, gamma, extendMode)))
                 {

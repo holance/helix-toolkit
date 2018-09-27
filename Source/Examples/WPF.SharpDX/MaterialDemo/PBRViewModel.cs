@@ -1,6 +1,6 @@
 ﻿using DemoCore;
 using HelixToolkit.Wpf.SharpDX;
-using SharpDX;
+using System.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +11,8 @@ using Point3D = System.Windows.Media.Media3D.Point3D;
 using Vector3D = System.Windows.Media.Media3D.Vector3D;
 using Transform3D = System.Windows.Media.Media3D.Transform3D;
 using Color = System.Windows.Media.Color;
-using Plane = SharpDX.Plane;
-using Vector3 = SharpDX.Vector3;
 using Colors = System.Windows.Media.Colors;
-using Color4 = SharpDX.Color4;
+using Matrix = System.Numerics.Matrix4x4;
 using System.IO;
 
 namespace MaterialDemo
@@ -130,7 +128,7 @@ namespace MaterialDemo
                 DisplacementMapScaleMask = new Vector4(0.1f, 0.1f, 0.1f, 0),
                 EnableAutoTangent =true,
             };
-            ModelTransform = new Media3D.MatrixTransform3D(Matrix.Translation(0, 30, 0).ToMatrix3D());
+            ModelTransform = new Media3D.MatrixTransform3D(Matrix.CreateTranslation(0, 30, 0).ToMatrix3D());
 
             builder = new MeshBuilder();
             builder.AddBox(Vector3.Zero, 100, 0.5, 100);
@@ -152,7 +150,7 @@ namespace MaterialDemo
                 RenderShadowMap = true,
                 EnableAutoTangent = true,
             };
-            FloorModelTransform = new Media3D.MatrixTransform3D(Matrix.Translation(0, -5, 0).ToMatrix3D());
+            FloorModelTransform = new Media3D.MatrixTransform3D(Matrix.CreateTranslation(0, -5, 0).ToMatrix3D());
         }
     }
 }

@@ -6,7 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.IO;
-using global::SharpDX;
+using HelixToolkit.Mathematics;
+using System.Numerics;
+using Matrix = System.Numerics.Matrix4x4;
 using SharpDX.Direct3D11;
 using System.Linq;
 #if !NETFX_CORE

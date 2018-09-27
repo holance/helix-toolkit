@@ -2,7 +2,8 @@
 The MIT License (MIT)
 Copyright (c) 2018 Helix Toolkit contributors
 */
-using SharpDX;
+using HelixToolkit.Mathematics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
 #if !NETFX_CORE
@@ -112,8 +113,8 @@ namespace HelixToolkit.UWP.Model
             AddPropertyBinding(nameof(PhongMaterialCore.DiffuseColor), () => { WriteValue(PhongPBRMaterialStruct.DiffuseStr, material.DiffuseColor); });
             AddPropertyBinding(nameof(PhongMaterialCore.UVTransform), () => 
             {
-                WriteValue(PhongPBRMaterialStruct.UVTransformR1Str, material.UVTransform.Column1);
-                WriteValue(PhongPBRMaterialStruct.UVTransformR2Str, material.UVTransform.Column2);
+                WriteValue(PhongPBRMaterialStruct.UVTransformR1Str, material.UVTransform.GetColumn(0));
+                WriteValue(PhongPBRMaterialStruct.UVTransformR2Str, material.UVTransform.GetColumn(1));
             });
             AddPropertyBinding(nameof(PhongMaterialCore.DiffuseMap), () =>
             {

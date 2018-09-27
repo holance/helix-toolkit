@@ -26,6 +26,7 @@ namespace HelixToolkit.Wpf.SharpDX
     using Cameras;
     using Model.Scene;
     using global::SharpDX.Direct3D11;
+    using System.Windows.Media.Media3D;
 
     /// <summary>
     /// Provides extension methods for <see cref="Viewport3DX" />.
@@ -142,7 +143,7 @@ namespace HelixToolkit.Wpf.SharpDX
             return FindBoundsInternal(viewport);
         }
 
-        internal static Rect3D FindBoundsInternal(this Viewport3DX viewport)
+        internal static BoundingBox FindBoundsInternal(this Viewport3DX viewport)
         {
             var maxVector = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
             var firstModel = viewport.Renderables.PreorderDFT((r) =>
@@ -689,7 +690,7 @@ namespace HelixToolkit.Wpf.SharpDX
         public static void ZoomExtents(this Viewport3DX viewport, double animationTime = 0)
         {
             var bounds = viewport.FindBoundsInternal();
-            var diagonal = new Vector3D(bounds.SizeX, bounds.SizeY, bounds.SizeZ);
+            var diagonal = bounds.Maximum - bounds.Minimum;
 
             if (diagonal.LengthSquared().Equals(0))
             {

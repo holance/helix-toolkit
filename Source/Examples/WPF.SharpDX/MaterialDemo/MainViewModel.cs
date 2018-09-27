@@ -12,13 +12,8 @@ using Media3D = System.Windows.Media.Media3D;
 using Point3D = System.Windows.Media.Media3D.Point3D;
 using Transform3D = System.Windows.Media.Media3D.Transform3D;
 using Color = System.Windows.Media.Color;
-using Plane = SharpDX.Plane;
-using Vector3 = SharpDX.Vector3;
 using Colors = System.Windows.Media.Colors;
-using Color4 = SharpDX.Color4;
-using System.IO;
-using System.Threading;
-using HelixToolkit.Wpf.SharpDX.Model;
+using Vector3D = System.Windows.Media.Media3D.Vector3D;
 using System.Windows.Input;
 
 namespace MaterialDemo
