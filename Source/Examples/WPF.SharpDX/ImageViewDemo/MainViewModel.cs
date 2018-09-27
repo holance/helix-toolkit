@@ -123,7 +123,7 @@ namespace ImageViewDemo
             this.SubTitle = "WPF & SharpDX";
 
             EffectsManager = new DefaultEffectsManager();
-            RenderTechnique = EffectsManager[DefaultRenderTechniqueNames.Blinn];
+            RenderTechnique = EffectsManager[DefaultRenderTechniqueNames.Mesh];
 
             this.OpenCommand = new RelayCommand((x) => this.OnOpenClick());
 
@@ -221,7 +221,7 @@ namespace ImageViewDemo
             };
 
             this.PlaneMaterial = white;
-            this.RenderTechnique = EffectsManager[DefaultRenderTechniqueNames.Blinn];
+            this.RenderTechnique = EffectsManager[DefaultRenderTechniqueNames.Mesh];
         }
 
         private void TryGetExif(string filename)

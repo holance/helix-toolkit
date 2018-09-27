@@ -22,7 +22,7 @@ namespace HelixToolkit.Wpf.SharpDX.Core2D
         /// <summary>
         /// Occurs when [on invalidate renderer].
         /// </summary>
-        public event EventHandler<EventArgs> OnInvalidateRenderer;
+        public event EventHandler<EventArgs> InvalidateRender;
 
         /// <summary>
         /// Gets a value indicating whether this instance is empty.
@@ -192,7 +192,7 @@ namespace HelixToolkit.Wpf.SharpDX.Core2D
         /// </summary>
         protected void InvalidateRenderer()
         {
-            OnInvalidateRenderer?.Invoke(this, EventArgs.Empty);
+            InvalidateRender?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

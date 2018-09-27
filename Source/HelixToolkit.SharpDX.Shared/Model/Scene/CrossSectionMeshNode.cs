@@ -63,11 +63,13 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         {
             set
             {
-                (RenderCore as ICrossSectionRenderParams).Plane1Enabled = value;
+                var v = (RenderCore as ICrossSectionRenderParams).PlaneEnabled;
+                v.X = value;
+                (RenderCore as ICrossSectionRenderParams).PlaneEnabled = v;
             }
             get
             {
-                return (RenderCore as ICrossSectionRenderParams).Plane1Enabled;
+                return (RenderCore as ICrossSectionRenderParams).PlaneEnabled.X;
             }
         }
         /// <summary>
@@ -80,11 +82,13 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         {
             set
             {
-                (RenderCore as ICrossSectionRenderParams).Plane2Enabled = value;
+                var v = (RenderCore as ICrossSectionRenderParams).PlaneEnabled;
+                v.Y = value;
+                (RenderCore as ICrossSectionRenderParams).PlaneEnabled = v;
             }
             get
             {
-                return (RenderCore as ICrossSectionRenderParams).Plane2Enabled;
+                return (RenderCore as ICrossSectionRenderParams).PlaneEnabled.Y;
             }
         }
         /// <summary>
@@ -97,11 +101,13 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         {
             set
             {
-                (RenderCore as ICrossSectionRenderParams).Plane3Enabled = value;
+                var v = (RenderCore as ICrossSectionRenderParams).PlaneEnabled;
+                v.Z = value;
+                (RenderCore as ICrossSectionRenderParams).PlaneEnabled = v;
             }
             get
             {
-                return (RenderCore as ICrossSectionRenderParams).Plane3Enabled;
+                return (RenderCore as ICrossSectionRenderParams).PlaneEnabled.Z;
             }
         }
         /// <summary>
@@ -114,11 +120,13 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         {
             set
             {
-                (RenderCore as ICrossSectionRenderParams).Plane4Enabled = value;
+                var v = (RenderCore as ICrossSectionRenderParams).PlaneEnabled;
+                v.W = value;
+                (RenderCore as ICrossSectionRenderParams).PlaneEnabled = v;
             }
             get
             {
-                return (RenderCore as ICrossSectionRenderParams).Plane4Enabled;
+                return (RenderCore as ICrossSectionRenderParams).PlaneEnabled.W;
             }
         }
         /// <summary>

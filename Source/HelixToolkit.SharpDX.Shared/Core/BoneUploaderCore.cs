@@ -17,7 +17,7 @@ namespace HelixToolkit.UWP.Core
 
     public sealed class BoneUploaderCore : RenderCore
     {
-        public event EventHandler OnBoneChanged;
+        public event EventHandler BoneChanged;
         private static readonly Matrix[] empty = new Matrix[0];
         private bool matricsChanged = true;
         private Matrix[] boneMatrices = empty;
@@ -32,7 +32,7 @@ namespace HelixToolkit.UWP.Core
                     {
                         boneMatrices = empty;
                     }
-                    OnBoneChanged?.Invoke(this, EventArgs.Empty);
+                    BoneChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
             get { return boneMatrices; }
@@ -50,7 +50,7 @@ namespace HelixToolkit.UWP.Core
 
         }
 
-        public override void Update(RenderContext context, DeviceContextProxy deviceContext)
+        protected override void OnUpdate(RenderContext context, DeviceContextProxy deviceContext)
         {
             if (matricsChanged)
             {
@@ -88,7 +88,7 @@ namespace HelixToolkit.UWP.Core
         {
             if (disposeManagedResources)
             {
-                OnBoneChanged = null;
+                BoneChanged = null;
             }
             base.OnDispose(disposeManagedResources);
         }

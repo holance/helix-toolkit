@@ -22,7 +22,9 @@ namespace HelixToolkit.Wpf.SharpDX
 {
     using Model.Scene;
     using System;
+    using System.ComponentModel;
     using System.Diagnostics;
+    using Utilities;
 
     public class TransformManipulator3D : GroupElement3D
     {
@@ -125,7 +127,9 @@ namespace HelixToolkit.Wpf.SharpDX
             }));
 
 
-
+#if !NETFX_CORE
+        [TypeConverter(typeof(Vector3Converter))]
+#endif
         public Vector3 CenterOffset
         {
             get { return (Vector3)GetValue(CenterOffsetProperty); }
@@ -304,8 +308,8 @@ namespace HelixToolkit.Wpf.SharpDX
             };
             (xrayEffect.SceneNode as NodePostEffectXRayGrid).XRayDrawingPassName = DefaultPassNames.EffectMeshDiffuseXRayGridP3;
             Children.Add(xrayEffect);
-            SceneNode.OnAttached += SceneNode_OnAttached;
-            SceneNode.OnDetached += SceneNode_OnDetached;
+            SceneNode.Attached += SceneNode_OnAttached;
+            SceneNode.Detached += SceneNode_OnDetached;
         }
 
         private void SceneNode_OnDetached(object sender, EventArgs e)

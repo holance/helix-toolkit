@@ -139,6 +139,11 @@ namespace HelixToolkit.Wpf.SharpDX
             {
                 viewport.RenderHost.UpdateAndRender();
             }
+            return FindBoundsInternal(viewport);
+        }
+
+        internal static Rect3D FindBoundsInternal(this Viewport3DX viewport)
+        {
             var maxVector = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
             var firstModel = viewport.Renderables.PreorderDFT((r) =>
             {
@@ -151,7 +156,7 @@ namespace HelixToolkit.Wpf.SharpDX
             {
                 if (x is IBoundable b)
                 {
-                    return b.HasBound && b.BoundsWithTransform.Maximum != b.BoundsWithTransform.Minimum 
+                    return b.HasBound && b.BoundsWithTransform.Maximum != b.BoundsWithTransform.Minimum
                     && b.BoundsWithTransform.Maximum != Vector3.Zero && b.BoundsWithTransform.Maximum != maxVector;
                 }
                 else
@@ -159,14 +164,14 @@ namespace HelixToolkit.Wpf.SharpDX
                     return false;
                 }
             }).FirstOrDefault();
-            if(firstModel == null)
+            if (firstModel == null)
             {
                 return new BoundingBox();
             }
             var bounds = firstModel.BoundsWithTransform;
-            
-            foreach(var renderable in viewport.Renderables.PreorderDFT((r) =>
-            {               
+
+            foreach (var renderable in viewport.Renderables.PreorderDFT((r) =>
+            {
                 if (r.Visible && !(r is ScreenSpacedNode))
                 {
                     return true;
@@ -174,7 +179,7 @@ namespace HelixToolkit.Wpf.SharpDX
                 return false;
             }))
             {
-                if(renderable is IBoundable r)
+                if (renderable is IBoundable r)
                 {
                     if (r.HasBound && r.BoundsWithTransform.Maximum != maxVector)
                     {
@@ -616,7 +621,7 @@ namespace HelixToolkit.Wpf.SharpDX
         {
             view.Width = width;
             view.Height = height;
-            if (double.IsNaN(width) || double.IsNaN(height))
+            if (double.IsNaN(width) || double.IsNaN(height) || view.RenderHost == null || !view.RenderHost.IsRendering)
             {
                 return;
             }
@@ -683,8 +688,8 @@ namespace HelixToolkit.Wpf.SharpDX
         /// <param name="animationTime">The animation time.</param>
         public static void ZoomExtents(this Viewport3DX viewport, double animationTime = 0)
         {
-            var bounds = viewport.FindBounds();
-            var diagonal = bounds.Maximum - bounds.Minimum;
+            var bounds = viewport.FindBoundsInternal();
+            var diagonal = new Vector3D(bounds.SizeX, bounds.SizeY, bounds.SizeZ);
 
             if (diagonal.LengthSquared().Equals(0))
             {

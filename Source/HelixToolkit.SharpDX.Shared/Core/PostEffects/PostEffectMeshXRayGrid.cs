@@ -30,12 +30,13 @@ namespace HelixToolkit.UWP.Core
     /// <summary>
     /// 
     /// </summary>
-    public class PostEffectMeshXRayGridCore : RenderCoreBase<BorderEffectStruct>, IPostEffectMeshXRayGrid
+    public class PostEffectMeshXRayGridCore : RenderCore, IPostEffectMeshXRayGrid
     {
         #region Variables
         private readonly List<KeyValuePair<SceneNode, IEffectAttributes>> currentCores = new List<KeyValuePair<SceneNode, IEffectAttributes>>();
         private DepthPrepassCore depthPrepassCore;
         private readonly ConstantBufferComponent modelCB;
+        private BorderEffectStruct modelStruct;
         #endregion
         #region Properties
         private string effectName = DefaultRenderTechniqueNames.PostEffectMeshXRayGrid; 
@@ -62,9 +63,9 @@ namespace HelixToolkit.UWP.Core
         {
             set
             {
-                SetAffectsRender(ref color, value);
+                SetAffectsRender(ref modelStruct.Color, value);
             }
-            get { return color; }
+            get { return modelStruct.Color; }
         }
 
         private int gridDensity = 8;
@@ -158,7 +159,7 @@ namespace HelixToolkit.UWP.Core
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="deviceContext">The device context.</param>
-        protected override void OnRender(RenderContext context, DeviceContextProxy deviceContext)
+        public override void Render(RenderContext context, DeviceContextProxy deviceContext)
         {
             var buffer = context.RenderHost.RenderBuffer;
             bool hasMSAA = buffer.ColorBufferSampleDesc.Count > 1;
@@ -203,6 +204,7 @@ namespace HelixToolkit.UWP.Core
             }
 
             deviceContext.ClearDepthStencilView(depthStencilBuffer, DepthStencilClearFlags.Depth, 1, 0);
+            OnUpdatePerModelStruct(context);
             modelCB.Upload(deviceContext, ref modelStruct);
             //Thrid pass, draw mesh with grid overlay
             for (int i = 0; i < currentCores.Count; ++i)
@@ -225,7 +227,7 @@ namespace HelixToolkit.UWP.Core
                 pass.BindStates(deviceContext, StateType.BlendState | StateType.DepthStencilState);
                 if(mesh.RenderCore is IMaterialRenderParams material)
                 {
-                    material.MaterialVariables.BindMaterial(context, deviceContext, pass);
+                    material.MaterialVariables.BindMaterialResources(context, deviceContext, pass);
                 }
                 mesh.RenderCustom(context, deviceContext);
             }
@@ -237,9 +239,8 @@ namespace HelixToolkit.UWP.Core
             currentCores.Clear();
         }
 
-        protected override void OnUpdatePerModelStruct(ref BorderEffectStruct model, RenderContext context)
+        private void OnUpdatePerModelStruct(RenderContext context)
         {
-            modelStruct.Color = color;
             modelStruct.Param.M11 = gridDensity;
             modelStruct.Param.M12 = dimmingFactor;
             modelStruct.Param.M13 = blendingFactor;

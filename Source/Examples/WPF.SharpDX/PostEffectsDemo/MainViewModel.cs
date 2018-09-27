@@ -31,7 +31,7 @@ namespace PostEffectsDemo
         public MainViewModel()
         {
             EffectsManager = new DefaultEffectsManager();
-            RenderTechnique = EffectsManager[DefaultRenderTechniqueNames.Blinn];
+            RenderTechnique = EffectsManager[DefaultRenderTechniqueNames.Mesh];
             // titles
             this.Title = "Post Processing Effects Demo";
             this.SubTitle = "WPF & SharpDX";

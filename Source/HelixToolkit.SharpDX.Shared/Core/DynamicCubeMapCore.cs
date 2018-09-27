@@ -27,10 +27,11 @@ namespace HelixToolkit.UWP.Core
     /// <summary>
     ///
     /// </summary>
-    public class DynamicCubeMapCore : RenderCoreBase<GlobalTransformStruct>, IDynamicReflector
+    public class DynamicCubeMapCore : RenderCore, IDynamicReflector
     {
         #region
         private readonly Vector3[] targets = new Vector3[6];
+        private readonly Vector3[] lookVector = new Vector3[6] { Vector3.UnitX, -Vector3.UnitX, Vector3.UnitY, -Vector3.UnitY, Vector3.UnitZ, -Vector3.UnitZ };
         private readonly Vector3[] upVectors = new Vector3[6] { Vector3.UnitY, Vector3.UnitY, -Vector3.UnitZ, Vector3.UnitZ, Vector3.UnitY, Vector3.UnitY };
         private CubeFaceCamerasStruct cubeFaceCameras = new CubeFaceCamerasStruct() { Cameras = new CubeFaceCamera[6] };
         // Create the cube map TextureCube (array of 6 textures)
@@ -151,7 +152,7 @@ namespace HelixToolkit.UWP.Core
                 {
                     cubeTextureSlot = value.PixelShader.ShaderResourceViewMapping.TryGetBindSlot(ShaderCubeTextureName);
                     textureSamplerSlot = value.PixelShader.SamplerMapping.TryGetBindSlot(ShaderCubeTextureSamplerName);
-                    InvalidateRenderer();
+                    RaiseInvalidateRender();
                 }
             }
             get
@@ -160,7 +161,7 @@ namespace HelixToolkit.UWP.Core
             }
         }
 
-        private SamplerStateDescription samplerDescription = DefaultSamplers.CubeSampler;
+        private SamplerStateDescription samplerDescription = DefaultSamplers.IBLSampler;
 
         /// <summary>
         /// Gets or sets the sampler description.
@@ -196,7 +197,10 @@ namespace HelixToolkit.UWP.Core
         {
             set
             {
-                SetAffectsRender(ref isleftHanded, value);
+                if (SetAffectsRender(ref isleftHanded, value))
+                {
+                    UpdateTargets();
+                }
             }
             get
             {
@@ -216,7 +220,10 @@ namespace HelixToolkit.UWP.Core
         {
             set
             {
-                SetAffectsRender(ref nearField, value);
+                if (SetAffectsRender(ref nearField, value))
+                {
+                    UpdateTargets();
+                }
             }
             get
             {
@@ -236,7 +243,10 @@ namespace HelixToolkit.UWP.Core
         {
             set
             {
-                SetAffectsRender(ref farField, value);
+                if (SetAffectsRender(ref farField, value))
+                {
+                    UpdateTargets();
+                }
             }
             get
             {
@@ -244,6 +254,7 @@ namespace HelixToolkit.UWP.Core
             }
         }
 
+        private Vector3 center = Vector3.Zero;
         /// <summary>
         /// Gets or sets the center.
         /// </summary>
@@ -252,7 +263,14 @@ namespace HelixToolkit.UWP.Core
         /// </value>
         public Vector3 Center
         {
-            set; get;
+            set
+            {
+                if (SetAffectsRender(ref center, value))
+                {
+                    UpdateTargets();
+                }
+            }
+            get { return center; }
         }
 
         /// <summary>
@@ -271,6 +289,22 @@ namespace HelixToolkit.UWP.Core
         /// </value>
         public string ShaderCubeTextureSamplerName { set; get; } = DefaultSamplerStateNames.CubeMapSampler;
 
+        private bool isDynamicScene = false;
+        /// <summary>
+        /// Gets or sets a value indicating whether this scene is dynamic scene.
+        /// If true, reflection map will be updated in each frame. Otherwise it will only be updated if scene graph or visibility changed.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is dynamic scene; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsDynamicScene
+        {
+            set
+            {
+                SetAffectsRender(ref isDynamicScene, value);
+            }
+            get { return isDynamicScene; }
+        }
         #endregion Properties
 
         /// <summary>
@@ -279,6 +313,7 @@ namespace HelixToolkit.UWP.Core
         public DynamicCubeMapCore() : base(RenderType.PreProc)
         {
             modelCB = AddComponent(new ConstantBufferComponent(new ConstantBufferDescription(DefaultBufferNames.GlobalTransformCB, GlobalTransformStruct.SizeInBytes)));
+            UpdateTargets();
         }
 
         private bool CreateCubeMapResources()
@@ -364,14 +399,19 @@ namespace HelixToolkit.UWP.Core
             return base.OnUpdateCanRenderFlag() && EnableReflector;
         }
 
-        protected override void OnRender(RenderContext context, DeviceContextProxy deviceContext)
+        public override void Render(RenderContext context, DeviceContextProxy deviceContext)
         {
             if (CreateCubeMapResources())
             {
-                InvalidateRenderer();
+                RaiseInvalidateRender();
                 return; // Skip this frame if texture resized to reduce latency.
             }
+            else if(!(IsDynamicScene || context.UpdateSceneGraphRequested || context.UpdatePerFrameRenderableRequested))
+            {
+                return;
+            }
             context.IsInvertCullMode = true;
+            var camLook = Vector3.Normalize(context.Camera.LookDirection);
 #if TEST
             for (int index = 0; index < 6; ++index)
 #else
@@ -420,29 +460,24 @@ namespace HelixToolkit.UWP.Core
             context.IsInvertCullMode = false;
             for (int i = 0; i < commands.Length; ++i)
             {
-                Device.ImmediateContext.ExecuteCommandList(commands[i], true);
-                commands[i].Dispose();
+                if (commands[i] != null)
+                {
+                    Device.ImmediateContext.ExecuteCommandList(commands[i], true);
+                    Disposer.RemoveAndDispose(ref commands[i]);
+                }
             }
             deviceContext.GenerateMips(CubeMap);
             context.UpdatePerFrameData(true, false, deviceContext);
         }
 
-        protected override void OnUpdatePerModelStruct(ref GlobalTransformStruct model, RenderContext context)
+        private void UpdateTargets()
         {
-            var camPos = Center;
-            targets[0] = camPos + Vector3.UnitX;
-            targets[1] = camPos - Vector3.UnitX;
-            targets[2] = camPos + Vector3.UnitY;
-            targets[3] = camPos - Vector3.UnitY;
-            targets[4] = camPos + Vector3.UnitZ;
-            targets[5] = camPos - Vector3.UnitZ;
-
             for (int i = 0; i < 6; ++i)
             {
-                cubeFaceCameras.Cameras[i].View = (IsLeftHanded ? MatrixHelper.LookAtLH(camPos, targets[i], upVectors[i]) : MatrixHelper.LookAtRH(camPos, targets[i], upVectors[i]))
-                    * Matrix.CreateScale(-1, 1, 1);
-                cubeFaceCameras.Cameras[i].Projection = IsLeftHanded ? MatrixHelper.PerspectiveFovLH((float)Math.PI * 0.5f, 1, NearField, FarField)
-                    : MatrixHelper.PerspectiveFovRH((float)Math.PI * 0.5f, 1, NearField, FarField);
+                targets[i] = center + lookVector[i];
+                cubeFaceCameras.Cameras[i].View = (IsLeftHanded ? Matrix.LookAtLH(center, targets[i], upVectors[i]) : Matrix.LookAtRH(center, targets[i], upVectors[i])) * Matrix.Scaling(-1, 1, 1);
+                cubeFaceCameras.Cameras[i].Projection = IsLeftHanded ? Matrix.PerspectiveFovLH((float)Math.PI * 0.5f, 1, NearField, FarField)
+                : Matrix.PerspectiveFovRH((float)Math.PI * 0.5f, 1, NearField, FarField);
             }
         }
 
@@ -464,7 +499,7 @@ namespace HelixToolkit.UWP.Core
         /// <param name="deviceContext">The device context.</param>
         public void BindCubeMap(DeviceContextProxy deviceContext)
         {
-            currSampler = deviceContext.GetSampler(PixelShader.Type, cubeTextureSlot, 1);
+            currSampler = deviceContext.GetSampler(PixelShader.Type, textureSamplerSlot, 1);
             currRes = deviceContext.GetShaderResources(PixelShader.Type, cubeTextureSlot, 1);
             if (EnableReflector)
             {

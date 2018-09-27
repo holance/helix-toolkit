@@ -280,6 +280,12 @@ namespace HelixToolkit.UWP
                     itemsContainer.Items.Add(item);
                 }
             }
+
+            if (hostPresenter != null)
+            {
+                renderHostInternal.Rendered -= this.RaiseRenderHostRendered;
+                renderHostInternal.ExceptionOccurred -= RenderHostInternal_ExceptionOccurred;
+            }
             hostPresenter = GetTemplateChild(ViewportPartNames.PART_HostPresenter) as ContentPresenter;
             if (hostPresenter != null)
             {
@@ -307,9 +313,7 @@ namespace HelixToolkit.UWP
                     renderHostInternal.RenderConfiguration.OITWeightMode = OITWeightMode;
                     renderHostInternal.RenderConfiguration.FXAALevel = FXAALevel;
                     renderHostInternal.RenderConfiguration.EnableRenderOrder = EnableRenderOrder;
-                    renderHostInternal.OnRendered -= this.OnRendered;
-                    renderHostInternal.OnRendered += this.OnRendered;
-                    renderHostInternal.ExceptionOccurred -= RenderHostInternal_ExceptionOccurred;
+                    renderHostInternal.Rendered += this.RaiseRenderHostRendered;
                     renderHostInternal.ExceptionOccurred += RenderHostInternal_ExceptionOccurred;
 
                     if (ShowFrameRate)
@@ -772,6 +776,12 @@ namespace HelixToolkit.UWP
         public void LookAt(Vector3 p, double animationTime)
         {
             this.CameraController?.ActualCamera?.LookAt(p, animationTime);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void RaiseRenderHostRendered(object sender, EventArgs e)
+        {
+            this.OnRendered?.Invoke(sender, e);
         }
     }
 }

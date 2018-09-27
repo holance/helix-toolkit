@@ -110,7 +110,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
                     NeedMatrixUpdate = true;
                     if (value == null)
                     {
-                        value = NullSceneNode.NullNode;
+                        parent = NullSceneNode.NullNode;
                     }
                 }
             }
@@ -131,7 +131,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             {
                 if (Set(ref visible, value))
                 {
-                    OnVisibleChanged?.Invoke(this, value ? BoolArgs.TrueArgs : BoolArgs.FalseArgs);
+                    VisibleChanged?.Invoke(this, value ? BoolArgs.TrueArgs : BoolArgs.FalseArgs);
                     InvalidateRender();
                 }
             }
@@ -314,11 +314,11 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
 
         #region Events
 
-        public event EventHandler<BoolArgs> OnVisibleChanged;
+        public event EventHandler<BoolArgs> VisibleChanged;
 
-        public event EventHandler OnAttached;
+        public event EventHandler Attached;
 
-        public event EventHandler OnDetached;
+        public event EventHandler Detached;
 
         #endregion Events
 
@@ -332,7 +332,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             renderCore = new Lazy<RenderCore>(() => 
             {
                 core = OnCreateRenderCore();
-                core.OnInvalidateRenderer += RenderCore_OnInvalidateRenderer;
+                core.InvalidateRender += RenderCore_OnInvalidateRenderer;
                 return core;
             }, true);
         }
@@ -364,8 +364,8 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
             if (IsAttached)
             {
                 NeedMatrixUpdate = true;
-                Attached();
-                OnAttached?.Invoke(this, EventArgs.Empty);
+                OnAttached();
+                Attached?.Invoke(this, EventArgs.Empty);
             }
             InvalidateSceneGraph();
         }
@@ -385,7 +385,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// <summary>
         /// Called when [attached] and <see cref="IsAttached"/> = true.
         /// </summary>
-        protected virtual void Attached() { }
+        protected virtual void OnAttached() { }
 
         /// <summary>
         /// Detaches the element from the host. Override <see cref="OnDetach"/>
@@ -399,7 +399,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
                 RenderCore.Detach();
                 OnDetach();
                 DisposeAndClear();
-                OnDetached?.Invoke(this, EventArgs.Empty);              
+                Detached?.Invoke(this, EventArgs.Empty);              
             }
         }
 
@@ -509,7 +509,10 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Render(RenderContext context, DeviceContextProxy deviceContext)
         {
-            core.Render(context, deviceContext);
+            if (core.CanRenderFlag)
+            {
+                core.Render(context, deviceContext);
+            }
         }
 
         /// <summary>
@@ -520,7 +523,10 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RenderShadow(RenderContext context, DeviceContextProxy deviceContext)
         {
-            core.RenderShadow(context, deviceContext);
+            if (core.CanRenderFlag)
+            {
+                core.RenderShadow(context, deviceContext);
+            }
         }
         /// <summary>
         /// Renders the custom.
@@ -530,7 +536,10 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RenderCustom(RenderContext context, DeviceContextProxy deviceContext)
         {
-            core.RenderCustom(context, deviceContext);
+            if (core.CanRenderFlag)
+            {
+                core.RenderCustom(context, deviceContext);
+            }
         }
         /// <summary>
         /// View frustum test.
@@ -814,15 +823,15 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
                 Items.Clear();
             }
             RenderCore.Dispose();
-            OnVisibleChanged = null;
+            VisibleChanged = null;
             OnTransformChanged = null;
             OnSetRenderTechnique = null;
             OnBoundChanged = null;
             OnTransformBoundChanged = null;
             OnBoundSphereChanged = null;
             OnTransformBoundSphereChanged = null;
-            OnAttached = null;
-            OnDetached = null;
+            Attached = null;
+            Detached = null;
             WrapperSource = null;
             base.OnDispose(disposeManagedResources);
         }

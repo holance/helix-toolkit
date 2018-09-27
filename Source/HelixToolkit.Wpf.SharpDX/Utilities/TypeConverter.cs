@@ -260,13 +260,26 @@ namespace HelixToolkit.Wpf.SharpDX.Utilities
 
                 if (source != null)
                 {
-                    var th = new TokenizerHelper(source, CultureInfo.InvariantCulture);
-                    var result = new Color4(
-                        Convert.ToSingle(th.NextTokenRequired(), CultureInfo.InvariantCulture),
-                        Convert.ToSingle(th.NextTokenRequired(), CultureInfo.InvariantCulture),
-                        Convert.ToSingle(th.NextTokenRequired(), CultureInfo.InvariantCulture),
-                        Convert.ToSingle(th.NextTokenRequired(), CultureInfo.InvariantCulture));
-                    return result;
+                    var sepChar = TokenizerHelper.GetNumericListSeparator(CultureInfo.InvariantCulture);
+                    if (source.Contains(sepChar.ToString()))
+                    {
+                        var th = new TokenizerHelper(source, CultureInfo.InvariantCulture);
+                        var result = new Color4(
+                            Convert.ToSingle(th.NextTokenRequired(), CultureInfo.InvariantCulture),
+                            Convert.ToSingle(th.NextTokenRequired(), CultureInfo.InvariantCulture),
+                            Convert.ToSingle(th.NextTokenRequired(), CultureInfo.InvariantCulture),
+                            Convert.ToSingle(th.NextTokenRequired(), CultureInfo.InvariantCulture));
+                        return result;
+                    }
+
+                    try
+                    {
+                        var obj = System.Windows.Media.ColorConverter.ConvertFromString(source);
+                        if (obj is System.Windows.Media.Color color)
+                        {
+                            return color.ToColor4();
+                        }
+                    } catch (Exception) {}
                 }
             }
             return base.ConvertFrom(context, culture, value);

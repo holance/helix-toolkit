@@ -479,7 +479,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
 
         protected override IRenderTechnique OnCreateRenderTechnique(IRenderHost host)
         {
-            return host.EffectsManager[DefaultRenderTechniqueNames.BlinnBatched];
+            return host.EffectsManager[DefaultRenderTechniqueNames.MeshBatched];
         }
 
         /// <summary>
@@ -558,10 +558,10 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
         /// <summary>
         /// Called when [attached].
         /// </summary>
-        protected override void Attached()
+        protected override void OnAttached()
         {
             OnRasterStateChanged();
-            base.Attached();
+            base.OnAttached();
         }
 
         /// <summary>

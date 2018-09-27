@@ -40,7 +40,7 @@ namespace HelixToolkit.Wpf.SharpDX
         /// <summary>
         /// 
         /// </summary>
-        public event EventHandler<EventArgs> OnHit;
+        public event EventHandler<EventArgs> Hit;
         /// <summary>
         /// The minumum size for enclosing region is a 1x1x1 cube.
         /// </summary>
@@ -577,7 +577,7 @@ namespace HelixToolkit.Wpf.SharpDX
             else
             {
                 hits.AddRange(modelHits);
-                OnHit?.Invoke(this, EventArgs.Empty);
+                Hit?.Invoke(this, EventArgs.Empty);
             }
             return isHit;
         }

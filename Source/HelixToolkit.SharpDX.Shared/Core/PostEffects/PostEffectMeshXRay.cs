@@ -49,12 +49,13 @@ namespace HelixToolkit.UWP.Core
     /// <summary>
     /// 
     /// </summary>
-    public class PostEffectMeshXRayCore : RenderCoreBase<BorderEffectStruct>, IPostEffectMeshXRay
+    public class PostEffectMeshXRayCore : RenderCore, IPostEffectMeshXRay
     {
         #region Variables
         private readonly List<KeyValuePair<SceneNode, IEffectAttributes>> currentCores = new List<KeyValuePair<SceneNode, IEffectAttributes>>();
         private DepthPrepassCore depthPrepassCore;
         private readonly ConstantBufferComponent modelCB;
+        private BorderEffectStruct modelStruct;
         #endregion
         #region Properties
         private string effectName = DefaultRenderTechniqueNames.PostEffectMeshXRay;
@@ -81,9 +82,9 @@ namespace HelixToolkit.UWP.Core
         {
             set
             {
-                SetAffectsRender(ref color, value);
+                SetAffectsRender(ref modelStruct.Color, value);
             }
-            get { return color; }
+            get { return modelStruct.Color; }
         }
 
         /// <summary>
@@ -146,8 +147,8 @@ namespace HelixToolkit.UWP.Core
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="deviceContext">The device context.</param>
-        protected override void OnRender(RenderContext context, DeviceContextProxy deviceContext)
-        {         
+        public override void Render(RenderContext context, DeviceContextProxy deviceContext)
+        {
             var buffer = context.RenderHost.RenderBuffer;
             bool hasMSAA = buffer.ColorBufferSampleDesc.Count > 1;
             var dPass = DoublePass;
@@ -249,11 +250,6 @@ namespace HelixToolkit.UWP.Core
         protected override bool OnUpdateCanRenderFlag()
         {
             return IsAttached && !string.IsNullOrEmpty(EffectName);
-        }
-
-        protected override void OnUpdatePerModelStruct(ref BorderEffectStruct model, RenderContext context)
-        {
-            modelStruct.Color = color;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
