@@ -245,6 +245,7 @@ namespace HelixToolkit.UWP.Core
         protected override void OnDetach()
         {
             viewResource = null;
+            resolutionChanged = true;
             base.OnDetach();
         }
 

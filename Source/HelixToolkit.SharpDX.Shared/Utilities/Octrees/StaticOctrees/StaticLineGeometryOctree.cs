@@ -119,14 +119,12 @@ namespace HelixToolkit.Wpf.SharpDX.Utilities
                     var v0 = Positions[idx1];
                     var v1 = Positions[idx2];
 
-                    var t0 = Vector3Helper.TransformCoordinate(v0, modelMatrix);
-                    var t1 = Vector3Helper.TransformCoordinate(v1, modelMatrix);
-                    Vector3 sp, tp;
-                    float sc, tc;
-                    var rayToLineDistance = LineBuilder.GetRayToLineDistance(rayWS, t0, t1, out sp, out tp, out sc, out tc);
+                    var t0 = Vector3.TransformCoordinate(v0, modelMatrix);
+                    var t1 = Vector3.TransformCoordinate(v1, modelMatrix);
+                    var rayToLineDistance = LineBuilder.GetRayToLineDistance(rayWS, t0, t1, out Vector3 sp, out Vector3 tp, out float sc, out float tc);
                     var svpm = context.ScreenViewProjectionMatrix;
-                    Vector3 sp3 = Vector3Helper.TransformCoordinate(sp, svpm);
-                    Vector3 tp3 = Vector3Helper.TransformCoordinate(tp, svpm);
+                    Vector3.TransformCoordinate(ref sp, ref svpm, out var sp3);
+                    Vector3.TransformCoordinate(ref tp, ref svpm, out var tp3);
                     var tv2 = new Vector2(tp3.X - sp3.X, tp3.Y - sp3.Y);
                     var dist = tv2.Length();
                     if (dist < lastDist && dist <= hitThickness)
@@ -191,15 +189,12 @@ namespace HelixToolkit.Wpf.SharpDX.Utilities
                 {
                     if (!BoxDisjointSphere(Objects[i].Value, ref sphere))
                     {
-                        Vector3 cloestPoint;
-
                         var idx = Objects[i].Key * 3;
                         var t1 = Indices[idx];
                         var t2 = Indices[idx + 1];
                         var v0 = Positions[t1];
                         var v1 = Positions[t2];
-                        float t;
-                        float distance = LineBuilder.GetPointToLineDistance2D(ref sphere.Center, ref v0, ref v1, out cloestPoint, out t);
+                        float distance = LineBuilder.GetPointToLineDistance2D(ref sphere.Center, ref v0, ref v1, out Vector3 cloestPoint, out float t);
                         if (tempResult.Distance > distance)
                         {
                             tempResult.Distance = distance;

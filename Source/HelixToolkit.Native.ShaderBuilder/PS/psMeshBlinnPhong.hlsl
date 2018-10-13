@@ -82,7 +82,10 @@ float4 main(PSInput input) : SV_Target
 
     // light emissive intensity and add ambient light
     float4 I = input.c2;
-
+    if (bHasEmissiveMap)
+    {
+        I.rgb += texEmissiveMap.Sample(samplerSurface, input.t);
+    }
     // get shadow color
     float s = 1;
     if (bHasShadowMap)
@@ -118,7 +121,7 @@ float4 main(PSInput input) : SV_Target
     }
     if (bHasSpecularMap)
     {
-        specular = texSpecularMap.Sample(samplerSurface, input.t);
+        specular *= texSpecularMap.Sample(samplerSurface, input.t);
     }
     // compute lighting
     for (int i = 0; i < NumLights; ++i)

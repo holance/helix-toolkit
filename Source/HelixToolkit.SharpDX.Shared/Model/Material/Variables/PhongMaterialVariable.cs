@@ -20,20 +20,21 @@ namespace HelixToolkit.UWP.Model
     /// </summary>
     public sealed class PhongMaterialVariables : MaterialVariable
     {
-        private const int NUMTEXTURES = 5;
+        private const int NUMTEXTURES = 6;
 
         private const int DiffuseIdx = 0,
             AlphaIdx = 1,
             NormalIdx = 2,
             DisplaceIdx = 3,
-            SpecularColorIdx = 4;
+            SpecularColorIdx = 4, 
+            EmissiveIdx = 5;
 
         private readonly ITextureResourceManager textureManager;
         private readonly IStatePoolManager statePoolManager;
         private readonly ShaderResourceViewProxy[] textureResources = new ShaderResourceViewProxy[NUMTEXTURES];
         private SamplerStateProxy surfaceSampler, displacementSampler, shadowSampler;
 
-        private int texDiffuseSlot, texAlphaSlot, texNormalSlot, texDisplaceSlot, texShadowSlot, texSpecularSlot;
+        private int texDiffuseSlot, texAlphaSlot, texNormalSlot, texDisplaceSlot, texShadowSlot, texSpecularSlot, texEmissiveSlot;
         private int samplerDiffuseSlot, samplerDisplaceSlot, samplerShadowSlot;
         private uint textureIndex = 0;
 
@@ -83,6 +84,13 @@ namespace HelixToolkit.UWP.Model
         /// </value>
         public string ShaderSpecularTexName { get; } = DefaultBufferNames.SpecularTB;
         /// <summary>
+        /// Gets the name of the shader emissive tex.
+        /// </summary>
+        /// <value>
+        /// The name of the shader emissive tex.
+        /// </value>
+        public string ShaderEmissiveTexName { get; } = DefaultBufferNames.EmissiveTB;
+        /// <summary>
         /// 
         /// </summary>
         public string ShaderSamplerDiffuseTexName { get; } = DefaultSamplerStateNames.SurfaceSampler;
@@ -103,6 +111,7 @@ namespace HelixToolkit.UWP.Model
                 if (SetAffectsRender(ref enableTessellation, value))
                 {
                     currentMaterialPass = value ? TessellationPass : MaterialPass;
+                    UpdateMappings(currentMaterialPass);
                     currentOITPass = value ? TessellationOITPass : MaterialOITPass;
                 }
             }
@@ -195,6 +204,7 @@ namespace HelixToolkit.UWP.Model
             AddPropertyBinding(nameof(PhongMaterialCore.RenderNormalMap), () => { WriteValue(PhongPBRMaterialStruct.HasNormalMapStr, material.RenderNormalMap && textureResources[NormalIdx] != null ? 1 : 0); });
             AddPropertyBinding(nameof(PhongMaterialCore.RenderSpecularColorMap), () => { WriteValue(PhongPBRMaterialStruct.HasSpecularColorMap, material.RenderSpecularColorMap && textureResources[SpecularColorIdx] != null ? 1 : 0); });
             AddPropertyBinding(nameof(PhongMaterialCore.RenderDisplacementMap), () => { WriteValue(PhongPBRMaterialStruct.HasDisplacementMapStr, material.RenderDisplacementMap && textureResources[DisplaceIdx] != null ? 1 : 0); });
+            AddPropertyBinding(nameof(PhongMaterialCore.RenderEmissiveMap), () => { WriteValue(PhongPBRMaterialStruct.HasEmissiveMapStr, material.RenderEmissiveMap && textureResources[EmissiveIdx] != null ? 1 : 0); });
             AddPropertyBinding(nameof(PhongMaterialCore.DiffuseMap), () => 
             {
                 CreateTextureView(material.DiffuseMap, DiffuseIdx);
@@ -232,7 +242,11 @@ namespace HelixToolkit.UWP.Model
                 RemoveAndDispose(ref displacementSampler);
                 displacementSampler = Collect(statePoolManager.Register(material.DisplacementMapSampler));
             });
-
+            AddPropertyBinding(nameof(PhongMaterialCore.EmissiveMap), () =>
+            {
+                CreateTextureView(material.EmissiveMap, EmissiveIdx);
+                TriggerPropertyAction(nameof(PhongMaterialCore.RenderEmissiveMap));
+            });
             AddPropertyBinding(nameof(PhongMaterialCore.EnableTessellation), () => { EnableTessellation = material.EnableTessellation; });
 
             shadowSampler = Collect(statePoolManager.Register(DefaultSamplers.ShadowSampler));
@@ -314,6 +328,7 @@ namespace HelixToolkit.UWP.Model
             shader.BindTexture(deviceContext, texNormalSlot, textureResources[NormalIdx]);
             shader.BindTexture(deviceContext, texAlphaSlot, textureResources[AlphaIdx]);
             shader.BindTexture(deviceContext, texSpecularSlot, textureResources[SpecularColorIdx]);
+            shader.BindTexture(deviceContext, texEmissiveSlot, textureResources[EmissiveIdx]);
             shader.BindSampler(deviceContext, samplerDiffuseSlot, surfaceSampler);
         }
 
@@ -323,12 +338,21 @@ namespace HelixToolkit.UWP.Model
             texDiffuseSlot = shaderPass.PixelShader.ShaderResourceViewMapping.TryGetBindSlot(ShaderDiffuseTexName);
             texAlphaSlot = shaderPass.PixelShader.ShaderResourceViewMapping.TryGetBindSlot(ShaderAlphaTexName);
             texNormalSlot = shaderPass.PixelShader.ShaderResourceViewMapping.TryGetBindSlot(ShaderNormalTexName);
-            texDisplaceSlot = shaderPass.VertexShader.ShaderResourceViewMapping.TryGetBindSlot(ShaderDisplaceTexName);
             texShadowSlot = shaderPass.PixelShader.ShaderResourceViewMapping.TryGetBindSlot(ShaderShadowTexName);
             texSpecularSlot = shaderPass.PixelShader.ShaderResourceViewMapping.TryGetBindSlot(ShaderSpecularTexName);
+            texEmissiveSlot = shaderPass.PixelShader.ShaderResourceViewMapping.TryGetBindSlot(ShaderEmissiveTexName);
             samplerDiffuseSlot = shaderPass.PixelShader.SamplerMapping.TryGetBindSlot(ShaderSamplerDiffuseTexName);
             samplerShadowSlot = shaderPass.PixelShader.SamplerMapping.TryGetBindSlot(ShaderSamplerShadowMapName);
-            samplerDisplaceSlot = shaderPass.VertexShader.SamplerMapping.TryGetBindSlot(ShaderSamplerDisplaceTexName);
+            if (!shaderPass.DomainShader.IsNULL && material.EnableTessellation)
+            {
+                texDisplaceSlot = shaderPass.DomainShader.ShaderResourceViewMapping.TryGetBindSlot(DefaultBufferNames.DisplacementMapTB);
+                samplerDisplaceSlot = shaderPass.DomainShader.SamplerMapping.TryGetBindSlot(DefaultSamplerStateNames.DisplacementMapSampler);
+            }
+            else
+            {
+                texDisplaceSlot = shaderPass.VertexShader.ShaderResourceViewMapping.TryGetBindSlot(DefaultBufferNames.DisplacementMapTB);
+                samplerDisplaceSlot = shaderPass.VertexShader.SamplerMapping.TryGetBindSlot(DefaultSamplerStateNames.DisplacementMapSampler);
+            }
         }
 
 

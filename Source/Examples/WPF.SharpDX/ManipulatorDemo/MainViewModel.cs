@@ -52,7 +52,6 @@ namespace ManipulatorDemo
         public MainViewModel()
         {
             EffectsManager = new DefaultEffectsManager();
-            RenderTechnique = EffectsManager[DefaultRenderTechniqueNames.Mesh];
 
             this.Title = "Manipulator Demo";
             this.SubTitle = null;

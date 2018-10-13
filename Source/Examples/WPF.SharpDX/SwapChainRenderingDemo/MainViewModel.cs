@@ -148,7 +148,6 @@
         public MainViewModel()
         {
             EffectsManager = new DefaultEffectsManager();
-            RenderTechnique = EffectsManager[DefaultRenderTechniqueNames.Mesh];
             
 
             // ----------------------------------------------

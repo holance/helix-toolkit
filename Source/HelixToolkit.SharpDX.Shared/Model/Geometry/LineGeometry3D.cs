@@ -66,9 +66,8 @@ namespace HelixToolkit.Wpf.SharpDX
                     float sc, tc;
                     var rayToLineDistance = LineBuilder.GetRayToLineDistance(rayWS, t0, t1, out sp, out tp, out sc, out tc);
                     var svpm = context.ScreenViewProjectionMatrix;
-                    
-                    var sp3 = Vector3Helper.TransformCoordinate(sp, svpm);
-                    var tp3 = Vector3Helper.TransformCoordinate(tp, svpm);
+                    Vector3.TransformCoordinate(ref sp, ref svpm, out var sp3);
+                    Vector3.TransformCoordinate(ref tp, ref svpm, out var tp3);
                     var tv2 = new Vector2(tp3.X - sp3.X, tp3.Y - sp3.Y);
                     var dist = tv2.Length();
                     if (dist < lastDist && dist <= hitTestThickness)

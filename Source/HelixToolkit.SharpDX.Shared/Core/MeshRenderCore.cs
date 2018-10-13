@@ -149,7 +149,6 @@ namespace HelixToolkit.UWP.Core
 
         protected override void OnDetach()
         {
-            DynamicReflector = null;
             rasterStateWireframe = null;
             base.OnDetach();
         }

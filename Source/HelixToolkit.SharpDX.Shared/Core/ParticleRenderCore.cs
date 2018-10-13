@@ -672,6 +672,7 @@ namespace HelixToolkit.UWP.Core
 
         private void DisposeBuffers()
         {
+            bufferDesc.SizeInBytes = 0;
             particleCountGSIABuffer.DisposeAndClear();
 
             particleCountStaging.DisposeAndClear();
@@ -691,6 +692,7 @@ namespace HelixToolkit.UWP.Core
         protected override void OnDetach()
         {
             DisposeBuffers();
+            isInitialParticleChanged = true;
             textureSampler = null;
             blendState = null;
             textureView = null;

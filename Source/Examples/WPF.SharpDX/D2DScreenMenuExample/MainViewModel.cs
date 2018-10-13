@@ -19,7 +19,6 @@ namespace D2DScreenMenuExample
         public MainViewModel()
         {
             EffectsManager = new DefaultEffectsManager();
-            RenderTechnique = EffectsManager[DefaultRenderTechniqueNames.Mesh];
 
             // ----------------------------------------------
             // titles

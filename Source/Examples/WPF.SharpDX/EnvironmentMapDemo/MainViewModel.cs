@@ -61,7 +61,6 @@ namespace EnvironmentMapDemo
             this.Model1 = b1.ToMeshGeometry3D();
 
             EffectsManager = new DefaultEffectsManager();
-            RenderTechnique = EffectsManager[DefaultRenderTechniqueNames.Mesh];
 
             SkyboxTexture = LoadFileToMemory("Cubemap_Grandcanyon.dds");
             int t = 5;

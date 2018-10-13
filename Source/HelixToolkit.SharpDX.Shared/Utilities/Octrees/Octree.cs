@@ -2026,12 +2026,10 @@ namespace HelixToolkit.Wpf.SharpDX
                 result.Distance = double.MaxValue;
                 var svpm = context.ScreenViewProjectionMatrix;
                 var smvpm = modelMatrix * svpm;
-                var clickPoint4 = new Vector4(rayWS.Position + rayWS.Direction, 1);
-                var pos4 = new Vector4(rayWS.Position, 1);
-                clickPoint4 = Vector4.Transform(clickPoint4, svpm);
-                pos4 = Vector4.Transform(pos4, svpm);
-                var clickPoint = clickPoint4.ToVector3();
-
+                var clickPoint3 = rayWS.Position + rayWS.Direction;
+                var pos3 = rayWS.Position;
+                Vector3.TransformCoordinate(ref clickPoint3, ref svpm, out var clickPoint);
+                Vector3.TransformCoordinate(ref pos3, ref svpm, out pos3);
                 
                 var dist = hitThickness;
                 for (int i = 0; i < Objects.Count; ++i)

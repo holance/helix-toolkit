@@ -118,6 +118,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Model\Animations\KeyFrameUpdater.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Camera\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Collection\Color4Collection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Geometry\BillboardImage3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Material\BillboardMaterialCore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Material\GenericMaterialCore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Material\LineMaterialCore.cs" />
@@ -319,6 +320,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\Buffers\ElementsBufferProxy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\FrameStatistics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\HitTestResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\ImagePacker\ArevaloRectanglePacker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\ImagePacker\ImagePacker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\ImagePacker\MiscHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\ImagePacker\OutOfSpaceException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\ImagePacker\RectanglePacker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\ImagePacker\SpritePackerBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\ImagePacker\TextInfoExtPacker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ImportExport\CMOReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ImportExport\IModelReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\ImportExport\ModelReader.cs" />

@@ -73,7 +73,7 @@ namespace HelixToolkit.UWP
         /// <value>
         /// The camera core.
         /// </value>
-        public CameraCore CameraCore { get { return this.Camera; } }
+        public CameraCore CameraCore { get { return this.cameraController.ActualCamera; } }
         /// <summary>
         /// Gets the items.
         /// </summary>
@@ -297,7 +297,6 @@ namespace HelixToolkit.UWP
                     renderHostInternal.Viewport = this;
                     renderHostInternal.IsRendering = Visibility == Visibility.Visible;
                     renderHostInternal.EffectsManager = this.EffectsManager;
-                    renderHostInternal.RenderTechnique = this.RenderTechnique;
                     renderHostInternal.ClearColor = this.BackgroundColor.ToColor4();
                     renderHostInternal.EnableRenderFrustum = this.EnableRenderFrustum;
                     renderHostInternal.IsShadowMapEnabled = this.IsShadowMappingEnabled;
