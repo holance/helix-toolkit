@@ -304,8 +304,8 @@ namespace HelixToolkit.Wpf.SharpDX
         private void DrawCharacter(string text, Vector3 origin, float w, float h, TextInfo info)
         {
             // CCW from bottom left 
-            var tl = new Vector2(-w / 2, h / 2) * info.Scale;
-            var br = new Vector2(w / 2, -h / 2) * info.Scale;
+            var tl = new Vector2(-w / 2, h / 2);
+            var br = new Vector2(w / 2, -h / 2);
 
             var uv_tl = new Vector2(0, 0);
             var uv_br = new Vector2(1, 1);
