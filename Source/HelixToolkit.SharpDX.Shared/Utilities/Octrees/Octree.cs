@@ -2028,8 +2028,8 @@ namespace HelixToolkit.Wpf.SharpDX
                 var smvpm = modelMatrix * svpm;
                 var clickPoint3 = rayWS.Position + rayWS.Direction;
                 var pos3 = rayWS.Position;
-                Vector3.TransformCoordinate(ref clickPoint3, ref svpm, out var clickPoint);
-                Vector3.TransformCoordinate(ref pos3, ref svpm, out pos3);
+                Vector3Helper.TransformCoordinate(ref clickPoint3, ref svpm, out var clickPoint);
+                Vector3Helper.TransformCoordinate(ref pos3, ref svpm, out pos3);
                 
                 var dist = hitThickness;
                 for (int i = 0; i < Objects.Count; ++i)

@@ -227,7 +227,7 @@ namespace HelixToolkit.Wpf.SharpDX
                         rect.Height = Math.Max(rect.Height, Math.Abs(tempList.Last().OffBR.Y));
                     }
                 }
-                var transform = textInfo.Angle != 0 ? Matrix3x2.Rotation(textInfo.Angle) : Matrix3x2.Identity;
+                var transform = textInfo.Angle != 0 ? Matrix3x2.CreateRotation(textInfo.Angle) : Matrix3x2.Identity;
                 var halfW = rect.Width / 2;
                 var halfH = rect.Height / 2;
                 //Add backbround vertex first. This also used for hit test
@@ -237,10 +237,10 @@ namespace HelixToolkit.Wpf.SharpDX
                     Background = textInfo.Background,
                     TexTL = Vector2.Zero,
                     TexBR = Vector2.Zero,
-                    OffTL = Matrix3x2.TransformPoint(transform, new Vector2(-halfW, halfH)),
-                    OffBR = Matrix3x2.TransformPoint(transform, new Vector2(halfW, -halfH)),
-                    OffTR = Matrix3x2.TransformPoint(transform, new Vector2(-halfW, -halfH)),
-                    OffBL = Matrix3x2.TransformPoint(transform, new Vector2(halfW, halfH)),
+                    OffTL = Vector2.Transform(new Vector2(-halfW, halfH), transform),
+                    OffBR = Vector2.Transform(new Vector2(halfW, -halfH), transform),
+                    OffTR = Vector2.Transform(new Vector2(-halfW, -halfH), transform),
+                    OffBL = Vector2.Transform(new Vector2(halfW, halfH), transform),
                 });
 
                 textInfo.UpdateTextInfo(rect.Width, rect.Height);
@@ -248,10 +248,10 @@ namespace HelixToolkit.Wpf.SharpDX
                 for(int k = tempPrevCount; k < tempList.Count; ++k)
                 {
                     var v = tempList[k];
-                    v.OffTL = Matrix3x2.TransformPoint(transform, v.OffTL + new Vector2(-halfW, halfH));
-                    v.OffBR = Matrix3x2.TransformPoint(transform, v.OffBR + new Vector2(-halfW, halfH));
-                    v.OffTR = Matrix3x2.TransformPoint(transform, v.OffTR + new Vector2(-halfW, halfH));
-                    v.OffBL = Matrix3x2.TransformPoint(transform, v.OffBL + new Vector2(-halfW, halfH));
+                    v.OffTL = Vector2.Transform(v.OffTL + new Vector2(-halfW, halfH), transform);
+                    v.OffBR = Vector2.Transform(v.OffBR + new Vector2(-halfW, halfH), transform);
+                    v.OffTR = Vector2.Transform(v.OffTR + new Vector2(-halfW, halfH), transform);
+                    v.OffBL = Vector2.Transform(v.OffBL + new Vector2(-halfW, halfH), transform);
                     tempList[k] = v;
                 }
                 Width += rect.Width;

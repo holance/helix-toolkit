@@ -119,12 +119,12 @@ namespace HelixToolkit.Wpf.SharpDX.Utilities
                     var v0 = Positions[idx1];
                     var v1 = Positions[idx2];
 
-                    var t0 = Vector3.TransformCoordinate(v0, modelMatrix);
-                    var t1 = Vector3.TransformCoordinate(v1, modelMatrix);
+                    var t0 = Vector3Helper.TransformCoordinate(v0, modelMatrix);
+                    var t1 = Vector3Helper.TransformCoordinate(v1, modelMatrix);
                     var rayToLineDistance = LineBuilder.GetRayToLineDistance(rayWS, t0, t1, out Vector3 sp, out Vector3 tp, out float sc, out float tc);
                     var svpm = context.ScreenViewProjectionMatrix;
-                    Vector3.TransformCoordinate(ref sp, ref svpm, out var sp3);
-                    Vector3.TransformCoordinate(ref tp, ref svpm, out var tp3);
+                    Vector3Helper.TransformCoordinate(ref sp, ref svpm, out var sp3);
+                    Vector3Helper.TransformCoordinate(ref tp, ref svpm, out var tp3);
                     var tv2 = new Vector2(tp3.X - sp3.X, tp3.Y - sp3.Y);
                     var dist = tv2.Length();
                     if (dist < lastDist && dist <= hitThickness)

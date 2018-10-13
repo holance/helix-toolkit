@@ -1,5 +1,6 @@
 ﻿using HelixToolkit.Wpf.SharpDX;
-using SharpDX;
+using HelixToolkit.Mathematics;
+using System.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Linq;

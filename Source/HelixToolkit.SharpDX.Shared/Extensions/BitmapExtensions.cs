@@ -51,7 +51,7 @@ namespace HelixToolkit.Wpf.SharpDX
                      target.Clear(background);
                      using (var brush = new SolidColorBrush(target, foreground))
                      {
-                         target.DrawTextLayout(new Vector2(padding.X, padding.Y), layout, brush);
+                         target.DrawTextLayout(new RawVector2(padding.X, padding.Y), layout, brush);
                      }
                  }))
                 {
@@ -104,7 +104,7 @@ namespace HelixToolkit.Wpf.SharpDX
                     PixelFormat = new global::SharpDX.Direct2D1.PixelFormat(global::SharpDX.DXGI.Format.Unknown, AlphaMode.Unknown)
                 }))
             {
-                target.Transform = Matrix3x2.Identity;
+                target.Transform = Matrix3x2.Identity.ToRaw();
                 target.BeginDraw();
                 drawingAction(target);
                 target.EndDraw();
@@ -160,8 +160,8 @@ namespace HelixToolkit.Wpf.SharpDX
              {
                  using (var brush = new LinearGradientBrush(target, new LinearGradientBrushProperties()
                  {
-                     StartPoint = startPoint,
-                     EndPoint = endPoint
+                     StartPoint = startPoint.ToRaw(),
+                     EndPoint = endPoint.ToRaw()
                  }, new GradientStopCollection(target, gradients, gamma, extendMode)))
                  {
                      target.FillRectangle(new RawRectangleF(0, 0, width, height), brush);
@@ -181,8 +181,8 @@ namespace HelixToolkit.Wpf.SharpDX
             {
                 using (var brush = new RadialGradientBrush(target, new RadialGradientBrushProperties()
                 {
-                    Center = center,
-                    GradientOriginOffset = gradientOriginOffset,
+                    Center = center.ToRaw(),
+                    GradientOriginOffset = gradientOriginOffset.ToRaw(),
                     RadiusX = radiusX,
                     RadiusY = radiusY,
                 }, new GradientStopCollection(target, gradients, gamma, extendMode)))
@@ -221,7 +221,7 @@ namespace HelixToolkit.Wpf.SharpDX
                          }
                          using (var brush = new SolidColorBrush(target, textColors[i]))
                          {
-                             target.DrawTextLayout(offset, layout, brush);
+                             target.DrawTextLayout(offset.ToRaw(), layout, brush);
                          }
                      }
                      faceRect.Left += faceSize;

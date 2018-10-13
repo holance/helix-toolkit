@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using SharpDX.Toolkit.Graphics;
 using System.Collections.Generic;
-using System.Diagnostics;
+using Matrix = System.Numerics.Matrix4x4;
 #if NETFX_CORE
 
 #else
@@ -161,7 +161,7 @@ namespace HelixToolkit.Wpf.SharpDX
 
             var uv_tl = new Vector2(0, 0);
             var uv_br = new Vector2(1, 1);
-            var transform = Angle != 0 ? Matrix3x2.Rotation(Angle) : Matrix3x2.Identity;
+            var transform = Angle != 0 ? Matrix3x2.CreateRotation(Angle) : Matrix3x2.Identity;
             var tr = new Vector2(br.X, tl.Y);
             var bl = new Vector2(tl.X, br.Y);
             BillboardVertices.Add(new BillboardVertex()
@@ -171,10 +171,10 @@ namespace HelixToolkit.Wpf.SharpDX
                 Background = MaskColor,
                 TexTL = uv_tl,
                 TexBR = uv_br,
-                OffTL = Matrix3x2.TransformPoint(transform, tl),
-                OffBR = Matrix3x2.TransformPoint(transform, br),
-                OffBL = Matrix3x2.TransformPoint(transform, bl),
-                OffTR = Matrix3x2.TransformPoint(transform, tr)
+                OffTL = Vector2.Transform(tl, transform),
+                OffBR = Vector2.Transform(br, transform),
+                OffBL = Vector2.Transform(bl, transform),
+                OffTR = Vector2.Transform(tr, transform)
             });
         }
 

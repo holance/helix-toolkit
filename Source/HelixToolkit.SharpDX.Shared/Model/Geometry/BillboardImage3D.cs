@@ -2,11 +2,13 @@
 The MIT License (MIT)
 Copyright (c) 2018 Helix Toolkit contributors
 */
-using SharpDX;
+using HelixToolkit.Mathematics;
+using System.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using Matrix = System.Numerics.Matrix4x4;
 #if NETFX_CORE
 #else
 using System.Windows.Media.Imaging;
@@ -82,7 +84,7 @@ namespace HelixToolkit.Wpf.SharpDX
             var tl = new Vector2(-info.Width / 2, info.Height / 2);
             var br = new Vector2(info.Width / 2, -info.Height / 2);
 
-            var transform = info.Angle != 0 ? Matrix3x2.Rotation(info.Angle) : Matrix3x2.Identity;
+            var transform = info.Angle != 0 ? Matrix3x2.CreateRotation(info.Angle) : Matrix3x2.Identity;
             var offTL = tl * info.Scale;
             var offBR = br * info.Scale;
             var offTR = new Vector2(offBR.X, offTL.Y);
@@ -94,10 +96,10 @@ namespace HelixToolkit.Wpf.SharpDX
                 Background = maskColor,
                 TexTL = info.UV_TopLeft,
                 TexBR = info.UV_BottomRight,
-                OffTL = Matrix3x2.TransformPoint(transform, offTL),
-                OffBL = Matrix3x2.TransformPoint(transform, offBL),
-                OffBR = Matrix3x2.TransformPoint(transform, offBR),
-                OffTR = Matrix3x2.TransformPoint(transform, offTR)
+                OffTL = Vector2.Transform(offTL, transform),
+                OffBL = Vector2.Transform(offBL, transform),
+                OffBR = Vector2.Transform(offBR, transform),
+                OffTR = Vector2.Transform(offTR, transform)
             });
         }
 

@@ -24,7 +24,7 @@
 
 #endregion
 
-using SharpDX;
+using HelixToolkit.Mathematics;
 
 #if !NETFX_CORE
 namespace HelixToolkit.Wpf.SharpDX.Utilities.ImagePacker

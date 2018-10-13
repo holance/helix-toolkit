@@ -4,14 +4,14 @@ Copyright (c) 2018 Helix Toolkit contributors
 */
 using HelixToolkit.Mathematics;
 using Matrix = System.Numerics.Matrix4x4;
-
+using System.Collections.Generic;
 #if NETFX_CORE
 namespace HelixToolkit.UWP.Model.Scene
 #else
 namespace HelixToolkit.Wpf.SharpDX.Model.Scene
 #endif
 {
-    using Core;
+    using Core;   
 
     /// <summary>
     /// 

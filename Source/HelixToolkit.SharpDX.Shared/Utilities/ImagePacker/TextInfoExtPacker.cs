@@ -1,8 +1,11 @@
-﻿using SharpDX;
+﻿using HelixToolkit.Mathematics;
+using System.Numerics;
+using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 using System.Collections.Generic;
 using System.Linq;
+using SharpDX.Mathematics.Interop;
 
 #if !NETFX_CORE
 namespace HelixToolkit.Wpf.SharpDX.Utilities.ImagePacker
@@ -42,7 +45,7 @@ namespace HelixToolkit.UWP.Utilities.ImagePacker
                 using (var brush = new SolidColorBrush(target, t.Background))
                     target.FillRectangle(location, brush);
                 using (var brush = new SolidColorBrush(target, t.Foreground))
-                    target.DrawTextLayout(new Vector2(location.Left + text.Value.Padding.X, location.Top + text.Value.Padding.Y),
+                    target.DrawTextLayout(new RawVector2(location.Left + text.Value.Padding.X, location.Top + text.Value.Padding.Y),
                         t.TextLayout, brush, DrawTextOptions.None);
             }
         }

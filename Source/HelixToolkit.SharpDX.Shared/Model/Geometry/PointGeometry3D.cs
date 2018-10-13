@@ -55,7 +55,7 @@ namespace HelixToolkit.Wpf.SharpDX
                 var smvpm = modelMatrix * svpm;
 
                 var clickPoint3 = rayWS.Position + rayWS.Direction;
-                Vector3.TransformCoordinate(ref clickPoint3, ref svpm, out var clickPoint);
+                Vector3Helper.TransformCoordinate(ref clickPoint3, ref svpm, out var clickPoint);
 
                 var result = new HitTestResult { IsValid = false, Distance = double.MaxValue };
                 var maxDist = hitThickness;
@@ -72,7 +72,7 @@ namespace HelixToolkit.Wpf.SharpDX
                         lastDist = dist;
                         
                         var lp0 = point;
-                        Vector3.TransformCoordinate(ref lp0, ref modelMatrix, out var pvv);
+                        Vector3Helper.TransformCoordinate(ref lp0, ref modelMatrix, out var pvv);
                         result.Distance = (rayWS.Position - pvv).Length();
                         result.PointHit = pvv;
                         result.ModelHit = originalSource;

@@ -142,15 +142,15 @@ namespace HelixToolkit.Wpf.SharpDX
                 Distance = double.MaxValue
             };
             var visualToScreen = context.ScreenViewProjectionMatrix;
-            var screenPoint3D = Vector3.TransformCoordinate(rayWS.Position, visualToScreen);
+            var screenPoint3D = Vector3Helper.TransformCoordinate(rayWS.Position, visualToScreen);
             var screenPoint = new Vector2(screenPoint3D.X, screenPoint3D.Y);
-            var scale3D = modelMatrix.ScaleVector;
+            var scale3D = modelMatrix.ScaleVector();
             var scale = new Vector2(scale3D.X, scale3D.Y);
             for (int i = 0; i < count; ++i)
             {
                 var vert = BillboardVertices[i];
                 var pos = vert.Position.ToVector3();
-                var c = Vector3.TransformCoordinate(pos, modelMatrix);
+                var c = Vector3Helper.TransformCoordinate(pos, modelMatrix);
                 var dir = c - rayWS.Position;
                 if (Vector3.Dot(dir, rayWS.Direction) < 0)
                 {
@@ -209,13 +209,13 @@ namespace HelixToolkit.Wpf.SharpDX
             };
             var viewMatrix = context.ViewMatrix;
             var viewMatrixInv = viewMatrix.PsudoInvert();
-            var scale3D = modelMatrix.ScaleVector;
+            var scale3D = modelMatrix.ScaleVector();
             var scale = new Vector2(scale3D.X, scale3D.Y);
             for (int i = 0; i < count; ++i)
             {
                 var vert = BillboardVertices[i];
                 var pos = vert.Position.ToVector3();
-                var c = Vector3.TransformCoordinate(pos, modelMatrix);
+                var c = Vector3Helper.TransformCoordinate(pos, modelMatrix);
                 var dir = c - rayWS.Position;
                 if (Vector3.Dot(dir, rayWS.Direction) < 0)
                 {
@@ -338,7 +338,7 @@ namespace HelixToolkit.Wpf.SharpDX
         private static Quad GetHitTestQuad(ref Vector3 center, ref Vector2 TL, ref Vector2 TR, ref Vector2 BL, ref Vector2 BR,
             ref Matrix viewMatrix, ref Matrix viewMatrixInv, ref Vector2 scale)
         {
-            var vcenter = Vector3.TransformCoordinate(center, viewMatrix);
+            var vcenter = Vector3Helper.TransformCoordinate(center, viewMatrix);
             var vcX = vcenter.X;
             var vcY = vcenter.Y;
 
@@ -347,17 +347,17 @@ namespace HelixToolkit.Wpf.SharpDX
             var tr = new Vector3(vcX + TR.X * scale.X, vcY + TR.Y * scale.Y, vcenter.Z);
             var tl = new Vector3(vcX + TL.X * scale.X, vcY + TL.Y * scale.Y, vcenter.Z);
 
-            bl = Vector3.TransformCoordinate(bl, viewMatrixInv);
-            br = Vector3.TransformCoordinate(br, viewMatrixInv);
-            tr = Vector3.TransformCoordinate(tr, viewMatrixInv);
-            tl = Vector3.TransformCoordinate(tl, viewMatrixInv);
+            bl = Vector3Helper.TransformCoordinate(bl, viewMatrixInv);
+            br = Vector3Helper.TransformCoordinate(br, viewMatrixInv);
+            tr = Vector3Helper.TransformCoordinate(tr, viewMatrixInv);
+            tl = Vector3Helper.TransformCoordinate(tl, viewMatrixInv);
             return new Quad(ref tl, ref tr, ref bl, ref br);
         }
 
         private static Quad2D GetScreenQuad(ref Vector3 center, ref Vector2 TL, ref Vector2 TR, ref Vector2 BL, ref Vector2 BR,
             ref Matrix screenViewProjection, ref Vector2 scale)
         {
-            var vcenter = Vector3.TransformCoordinate(center, screenViewProjection);
+            var vcenter = Vector3Helper.TransformCoordinate(center, screenViewProjection);
             Vector2 p = new Vector2(vcenter.X, vcenter.Y);
             var tl = p + TL * scale;
             var tr = p + TR * scale;

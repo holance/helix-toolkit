@@ -334,7 +334,7 @@ namespace HelixToolkit.Wpf.SharpDX.Model.Scene
 
         protected override bool OnHitTest(RenderContext context, Matrix totalModelMatrix, ref Ray ray, ref List<HitTestResult> hits)
         {
-            var p = Vector3.TransformCoordinate(ray.Position, context.ScreenViewProjectionMatrix);
+            var p = Vector3Helper.TransformCoordinate(ray.Position, context.ScreenViewProjectionMatrix);
             var screenSpaceCore = RenderCore as ScreenSpacedMeshRenderCore;
             float viewportSize = screenSpaceCore.Size * screenSpaceCore.SizeScale;
             var offx = (float)(context.ActualWidth / 2 * (1 + screenSpaceCore.RelativeScreenLocationX) - viewportSize / 2);

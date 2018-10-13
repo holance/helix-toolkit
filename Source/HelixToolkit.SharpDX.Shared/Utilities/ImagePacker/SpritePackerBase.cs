@@ -25,8 +25,9 @@
  */
 
 #endregion
-
 using SharpDX;
+using HelixToolkit.Mathematics;
+using System.Numerics;
 using SharpDX.Direct2D1;
 using SharpDX.WIC;
 using System;
@@ -223,7 +224,7 @@ namespace HelixToolkit.UWP.Utilities.ImagePacker
                         PixelFormat = new global::SharpDX.Direct2D1.PixelFormat(global::SharpDX.DXGI.Format.Unknown, AlphaMode.Unknown)
                     }))
                 {
-                    target.Transform = Matrix3x2.Identity;
+                    target.Transform = Matrix3x2.Identity.ToRaw();
                     target.BeginDraw();
                     action(target);
                     target.EndDraw();

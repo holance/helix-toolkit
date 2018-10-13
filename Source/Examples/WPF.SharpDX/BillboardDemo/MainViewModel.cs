@@ -2,8 +2,8 @@
 
 using Cyotek.Drawing.BitmapFont;
 using HelixToolkit.Wpf.SharpDX;
-using HelixToolkit.Wpf.SharpDX.Utilities.ImagePacker;
-using SharpDX;
+using HelixToolkit.Mathematics;
+using System.Numerics;
 using System;
 using System.Collections.Generic;
 using System.IO;
