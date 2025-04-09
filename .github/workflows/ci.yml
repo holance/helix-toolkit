@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        dotnet-version: ['4.8', '6.0.x', '8.0.x'] # Add the .NET versions you want to test
+        dotnet-version: ['4.8.x', '6.0.x', '8.0.x'] # Add the .NET versions you want to test
 
     steps:
     - name: Set up .NET ${{ matrix.dotnet-version }}
