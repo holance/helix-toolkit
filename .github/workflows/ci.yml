@@ -15,14 +15,17 @@ jobs:
   build:
     runs-on: windows-latest
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    strategy:
+      matrix:
+        dotnet-version: ['4.8', '6.0.x', '8.0.x'] # Add the .NET versions you want to test
 
-    - name: Set up .NET
-      uses: actions/setup-dotnet@v1
+    steps:
+    - name: Set up .NET ${{ matrix.dotnet-version }}
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x 4.8.x 8.0.x
+        dotnet-version: ${{ matrix.dotnet-version }}
+    - name: Checkout repository
+      uses: actions/checkout@v2        
 
     - name: Install GitVersion
       run: choco install gitversion.portable --version=5.12.0 -y
