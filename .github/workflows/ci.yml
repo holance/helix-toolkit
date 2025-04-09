@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - release
   pull_request:
     branches:
       - main
@@ -40,4 +41,4 @@ jobs:
 
     - name: Publish to NuGet
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: nuget push .\Source\**\*.nupkg -Source https://www.myget.org/F/helixtoolkit-nightly/api/v2/package -ApiKey Ed/7hI7ap963N/sJk9GAj1FeaZ0ynQlG1sH2U7BtoW5ykGPKNr2q0ThLkBRY8JKh
+      run: nuget push .\Source\**\*.nupkg -Source https://www.myget.org/F/helixtoolkit-nightly/api/v2/package -ApiKey ${{ secrets.NUGET_API_KEY }}
