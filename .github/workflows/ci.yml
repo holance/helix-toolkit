@@ -20,7 +20,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
-          4.8.x
+          4.8.2
           6.0.x
           8.0.x
           netstandard2.0
