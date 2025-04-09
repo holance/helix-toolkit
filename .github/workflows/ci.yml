@@ -17,7 +17,8 @@ jobs:
 
     strategy:
       matrix:
-        framework: [net8.0, net6.0, net48]
+        dotnet_version: [ '6.0.x', '4.8.x', '8.0.x' ]
+        target_framework: [ 'net6.0', 'net48', 'net8.0' ]
 
     steps:
     - name: Setup .NET
