@@ -24,7 +24,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: ${{ matrix.framework }}
+        dotnet-version: ${{ matrix.dotnet_version }}
         
     - name: Checkout repository
       uses: actions/checkout@v2        
@@ -39,7 +39,7 @@ jobs:
       run: gitversion /l console /output buildserver /updateprojectfiles
 
     - name: Build solution
-      run: dotnet build .\Source\HelixToolkit.sln --configuration Release --no-restore
+      run: dotnet build .\Source\HelixToolkit.sln --configuration Release --no-restore --framework ${{ matrix.target_framework }}
 
     - name: Run tests
       run: .\Source\run-tests.cmd
