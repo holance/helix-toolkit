@@ -17,13 +17,14 @@ jobs:
 
     strategy:
       matrix:
-        dotnet-version: ['4.8.x', '6.0.x', '8.0.x'] # Add the .NET versions you want to test
+        framework: [net8.0, net6.0, net48]
 
     steps:
-    - name: Set up .NET ${{ matrix.dotnet-version }}
-      uses: actions/setup-dotnet@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: ${{ matrix.dotnet-version }}
+        dotnet-version: ${{ matrix.framework }}
+        
     - name: Checkout repository
       uses: actions/checkout@v2        
 
